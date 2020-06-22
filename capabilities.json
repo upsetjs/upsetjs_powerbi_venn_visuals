@@ -174,7 +174,23 @@
     },
     "style": {
       "displayName": "Style",
-      "properties": {}
+      "properties": {
+        "mode": {
+          "displayName": "Layout Mode",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Venn Diagram",
+                "value": "venn"
+              },
+              {
+                "displayName": "Euler Diagram",
+                "value": "euler"
+              }
+            ]
+          }
+        }
+      }
     },
     "fonts": {
       "displayName": "Fonts",

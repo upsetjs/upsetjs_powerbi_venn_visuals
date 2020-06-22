@@ -19,4 +19,6 @@ export default class VisualSettings extends dataViewObjectsParser.DataViewObject
 
 export class UpSetThemeSettings extends UpSetBaseThemeSettings {}
 
-export class UpSetStyleSettings {}
+export class UpSetStyleSettings {
+  mode: 'venn' | 'euler' = 'venn';
+}

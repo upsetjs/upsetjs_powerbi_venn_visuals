@@ -5,12 +5,21 @@
  * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import { renderVennDiagram, renderVennDiagramSkeleton, VennDiagramProps, generateCombinations } from '@upsetjs/bundle';
+import {
+  renderVennDiagram,
+  renderVennDiagramSkeleton,
+  VennDiagramProps,
+  generateCombinations,
+  createVennJSAdapter,
+} from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
 import { extractElems, injectSelectionId, resolveSelection, extractSets, mergeColors } from './utils/model';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
 import { IPowerBIElem } from './utils/interfaces';
+import { layout } from '@upsetjs/venn.js';
+
+const adapter = createVennJSAdapter(layout);
 
 export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
@@ -40,6 +49,11 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private render() {
+    if (this.settings.style.mode !== 'venn' || this.props.sets.length > 3) {
+      this.props.layout = adapter;
+    } else {
+      delete this.props.layout;
+    }
     renderVennDiagram(this.target, this.props);
   }
 
@@ -153,7 +167,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private verifyLicense() {
-    this.settings.license.updateLicenseState(this.target, this.host, () => usesProFeatures(this.settings));
+    this.settings.license.updateLicenseState(this.target, this.host, () =>
+      usesProFeatures(this.props.sets.length, this.settings)
+    );
   }
 
   /**
@@ -171,9 +187,12 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 }
 
-function usesProFeatures(settings: VisualSettings) {
+function usesProFeatures(numSets: number, settings: VisualSettings) {
   const theme = settings.theme;
   if (theme.theme !== 'light') {
+    return true;
+  }
+  if (numSets > 3 || settings.style.mode !== 'venn') {
     return true;
   }
 
