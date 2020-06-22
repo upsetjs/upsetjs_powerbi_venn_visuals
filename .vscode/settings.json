@@ -1,0 +1,47 @@
+{
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "eslint.enable": true,
+    "files.associations": {
+        "*.resjson": "json"
+    },
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "/pbiviz.json"
+            ],
+            "url": "./node_modules/powerbi-visuals-api/schema.pbiviz.json"
+        },
+        {
+            "fileMatch": [
+                "/capabilities.json"
+            ],
+            "url": "./node_modules/powerbi-visuals-api/schema.capabilities.json"
+        },
+        {
+            "fileMatch": [
+                "/dependencies.json"
+            ],
+            "url": "./node_modules/powerbi-visuals-api/schema.dependencies.json"
+        }
+    ],
+    "search.exclude": {
+        "typings": true
+    },
+    "typescript.tsdk": "node_modules\\typescript\\lib"
+}

@@ -1,0 +1,20 @@
+{
+  "hooks": {
+    "before:init": "npm run lint",
+    "before:release": "npm run build",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  },
+  "git": {
+    "tagName": "v${version}"
+  },
+  "npm": {
+    "publish": false
+  },
+  "github": {
+    "release": true,
+    "assets": ["dist/*.pbiviz"]
+  },
+  "plugins": {
+    "./scripts/bump.js": {}
+  }
+}

@@ -1,0 +1,168 @@
+/**
+ * @upsetjs/powerbi_visuals
+ * https://github.com/upsetjs/upsetjs_powerbi_visuals
+ *
+ * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
+ */
+import {
+  ISetLike,
+  UpSetAddonHandlerInfo,
+  ICategoryBins,
+  IBoxPlot,
+  UpSetAddonHandlerInfos,
+  isSetCombination,
+} from '@upsetjs/bundle';
+import powerbi from 'powerbi-visuals-api';
+import { IPowerBIElem, isPowerBiSetLike } from './interfaces';
+
+export function createContextMenuHandler(selectionManager: powerbi.extensibility.ISelectionManager) {
+  return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
+    evt.preventDefault();
+    if (!selection) {
+      return;
+    }
+    const sel = isPowerBiSetLike(selection) ? selection : selection.elems[0];
+    const id = sel && sel.s != null ? sel.s : {};
+    selectionManager.showContextMenu(id, {
+      x: evt.clientX,
+      y: evt.clientY,
+    });
+  };
+}
+
+export function createSelectionHandler(
+  selectionManager: powerbi.extensibility.ISelectionManager,
+  selectImpl: (v: ISetLike<IPowerBIElem> | null) => void
+) {
+  return (selection: ISetLike<IPowerBIElem> | null) => {
+    if (!selection) {
+      selectionManager.clear().then(() => {
+        selectImpl(null);
+      });
+    } else {
+      const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
+      selectionManager.select(sel).then(() => {
+        selectImpl(selection);
+      });
+    }
+  };
+}
+
+function toHeader(s: ISetLike<any>) {
+  switch (s.type) {
+    case 'composite':
+      return 'Set Composite';
+    case 'distinctIntersection':
+    case 'intersection':
+      return 'Set Intersection';
+    case 'union':
+      return 'Set Union';
+    default:
+      return 'Set';
+  }
+}
+
+function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility.VisualTooltipDataItem[] {
+  if (!addon) {
+    return [];
+  }
+  if (addon.id === 'categorical') {
+    // should be fixed in 1.4.1
+    const bins = <ICategoryBins>Object.keys(addon.value)
+      .filter((v) => v !== 'toString')
+      .map((k) => (<any>addon.value)[k]);
+    return [{ displayName: 'Attribute', value: addon.name }].concat(
+      bins.map((bin) => ({
+        displayName: bin.label,
+        color: bin.color,
+        value: `${bin.count.toLocaleString()} (${Math.round(100 * bin.percentage)}%)`,
+      }))
+    );
+  }
+  if (addon.id === 'boxplot') {
+    const b = <IBoxPlot>addon.value;
+    const labels = ['Minimum', '25% Quantile', 'Median', '75% Quantile', 'Maximum'];
+    const values = [b.min, b.q1, b.median, b.q3, b.max];
+    return [{ displayName: 'Attribute', value: addon.name }].concat(
+      labels.map((l, i) => ({ displayName: l, value: values[i].toFixed(2) }))
+    );
+  }
+  return [];
+}
+
+const TOOLTIP_DELAY = 250;
+
+export declare type OnHandler = (
+  selection: ISetLike<IPowerBIElem> | null,
+  evt: MouseEvent,
+  addons: UpSetAddonHandlerInfos
+) => void;
+
+export function createTooltipHandler(
+  target: HTMLElement,
+  host: powerbi.extensibility.visual.IVisualHost
+): [OnHandler | undefined, OnHandler | undefined] {
+  if (!host.tooltipService.enabled()) {
+    return [undefined, undefined];
+  }
+
+  const createArgs = (selection: ISetLike<IPowerBIElem>, evt: MouseEvent, addons: UpSetAddonHandlerInfos) => {
+    const bb = target.getBoundingClientRect();
+    const coordinates = [evt.clientX - bb.left - target.clientLeft, evt.clientY - bb.top - target.clientTop];
+
+    const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
+    return <powerbi.extensibility.TooltipShowOptions>{
+      isTouchEvent: false,
+      coordinates,
+      dataItems: [
+        {
+          header: toHeader(selection),
+          displayName: selection.name,
+          value: selection.cardinality.toLocaleString(),
+        },
+        ...(isSetCombination(selection) && selection.degree > 1
+          ? Array.from(selection.sets).map((s) => ({ displayName: s.name, value: s.cardinality.toLocaleString() }))
+          : []),
+        ...(<powerbi.extensibility.VisualTooltipDataItem[]>[]).concat(...addons.map(renderAddon)),
+      ],
+      identities: [sel],
+    };
+  };
+
+  let visible = false;
+  let timeout = -1;
+
+  const onHover: OnHandler = (s, evt, addons) => {
+    if (timeout >= 0) {
+      clearTimeout(timeout);
+      timeout = -1;
+    }
+    if (!s) {
+      visible = false;
+      host.tooltipService.hide({
+        immediately: false,
+        isTouchEvent: false,
+      });
+      return;
+    }
+    timeout = self.setTimeout(() => {
+      const args = createArgs(s, evt, addons);
+      visible = true;
+      host.tooltipService.show(args);
+    }, TOOLTIP_DELAY);
+  };
+
+  return [
+    onHover,
+    (s, evt, addons) => {
+      if (!visible) {
+        return onHover(s, evt, addons);
+      }
+      if (!s) {
+        return;
+      }
+      const args = createArgs(s, evt, addons);
+      host.tooltipService.move(args);
+    },
+  ];
+}
