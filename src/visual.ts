@@ -5,22 +5,12 @@
  * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import {
-  boxplotAddon,
-  categoricalAddon,
-  generateCombinations,
-  render,
-  renderSkeleton,
-  UpSetProps,
-} from '@upsetjs/bundle';
+import { renderVennDiagram, renderVennDiagramSkeleton, VennDiagramProps, generateCombinations } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
-import { extractElems, injectSelectionId, resolveSelection, extractSets } from './utils/model';
+import { extractElems, injectSelectionId, resolveSelection, extractSets, mergeColors } from './utils/model';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
-import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
 import { IPowerBIElem } from './utils/interfaces';
-
-const EMPTY_ARRAY: any[] = [];
 
 export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
@@ -33,8 +23,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly onHover: undefined | OnHandler;
   private readonly onMouseMove: undefined | OnHandler;
 
-  private attributes: (UpSetCategoricalAttribute | UpSetNumericAttribute)[] = [];
-  private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
+  private props: VennDiagramProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
@@ -47,10 +36,11 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.props.selection = s;
       this.render();
     });
+    this.target.addEventListener('click', (evt) => this.setSelection(null, evt, []));
   }
 
   private render() {
-    render(this.target, this.props);
+    renderVennDiagram(this.target, this.props);
   }
 
   update(options: powerbi.extensibility.visual.VisualUpdateOptions) {
@@ -69,7 +59,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private renderPlaceholder() {
     this.target.textContent = '';
     this.target.style.position = 'relative';
-    renderSkeleton(this.target, {
+    renderVennDiagramSkeleton(this.target, {
       width: '100%',
       height: '100%',
     });
@@ -93,7 +83,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     // handle window
     const elems = extractElems(dataView.categorical!, this.host);
 
-    this.attributes = this.generateAttributes(dataView);
     const sets =
       elems.length === 0
         ? []
@@ -108,10 +97,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       return false;
     }
 
-    this.verifyLicense(
-      sets.length,
-      dataView.categorical!.values.reduce((acc, d) => acc + (d.source?.roles?.attributes ? 1 : 0), 0)
-    );
+    this.verifyLicense();
 
     if (dataView.metadata.segment) {
       // load more chunks
@@ -119,7 +105,12 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     }
 
     const combinations = injectSelectionId(
-      generateCombinations(sets, this.settings.combinations.generate(elems)),
+      generateCombinations(sets, {
+        type: 'distinctIntersection',
+        min: 1,
+        empty: true,
+        mergeColors,
+      }),
       this.host
     );
     if (combinations.length === 0) {
@@ -149,14 +140,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.settings.style
     );
 
-    if (this.attributes.length === 0) {
-      this.props.setAddons = EMPTY_ARRAY;
-      this.props.combinationAddons = EMPTY_ARRAY;
-    } else {
-      this.props.setAddons = this.attributes.map((attr, i) => asAddon(attr, i, false));
-      this.props.combinationAddons = this.attributes.map((attr, i) => asAddon(attr, i, true));
-    }
-
     if (!areDummyValues && this.host.allowInteractions) {
       this.props.onClick = this.setSelection;
       this.props.onContextMenu = this.onContextMenu;
@@ -169,28 +152,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     return true;
   }
 
-  private generateAttributes(dataView: powerbi.DataView) {
-    const cat = dataView.categorical!.categories![0];
-    // we need some offset since individual categories cannot be directly selected just categories rows
-    let enumerationOffset = 0;
-    return dataView.categorical!.values
-      ? dataView
-          .categorical!.values.filter((d) => d.source?.roles?.attributes)
-          .map((attr) => {
-            if (isNumeric(attr)) {
-              return new UpSetNumericAttribute(attr);
-            }
-            const c = new UpSetCategoricalAttribute(attr, cat, this.host, enumerationOffset);
-            enumerationOffset += c.categories.length;
-            return c;
-          })
-      : [];
-  }
-
-  private verifyLicense(numSets: number, numAttributes: number) {
-    this.settings.license.updateLicenseState(this.target, this.host, () =>
-      usesProFeatures(numSets, numAttributes, this.settings)
-    );
+  private verifyLicense() {
+    this.settings.license.updateLicenseState(this.target, this.host, () => usesProFeatures(this.settings));
   }
 
   /**
@@ -204,66 +167,15 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     if (options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME) {
       return this.settings.theme.enumerateSetColors(this.props.sets);
     }
-    if (options.objectName === UpSetCategoricalAttribute.OBJECT_NAME) {
-      const categoricalAttributes = this.attributes.filter(
-        (d): d is UpSetCategoricalAttribute => d instanceof UpSetCategoricalAttribute
-      );
-      const instances = (<powerbi.VisualObjectInstance[]>[]).concat(
-        ...categoricalAttributes.map((cat) => cat.asPropertyInstance())
-      );
-      return {
-        instances,
-      };
-    }
     return VisualSettings.enumerateObjectInstances(this.settings, options);
   }
 }
 
-function usesProFeatures(numSets: number, numAttributes: number, settings: VisualSettings) {
-  if (numSets > 4 || numAttributes > 0) {
-    return true;
-  }
-
+function usesProFeatures(settings: VisualSettings) {
   const theme = settings.theme;
   if (theme.theme !== 'light') {
     return true;
   }
 
-  const combinations = settings.combinations;
-  if (<string>combinations.order !== 'cardinality,name') {
-    return true;
-  }
-
-  const style = settings.style;
-  if (style.numericScale !== 'linear') {
-    return true;
-  }
-
   return false;
-}
-
-function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: number, vertical: boolean) {
-  if (attr instanceof UpSetNumericAttribute) {
-    return boxplotAddon(
-      (v: IPowerBIElem) => <number>v.attrs[i],
-      {
-        min: <number>attr.data.minLocal,
-        max: <number>attr.data.maxLocal,
-      },
-      {
-        name: attr.displayName,
-        orient: vertical ? 'vertical' : 'horizontal',
-      }
-    );
-  }
-  return categoricalAddon(
-    (v: IPowerBIElem) => String(v.attrs[i]),
-    {
-      categories: attr.categories,
-    },
-    {
-      name: attr.displayName,
-      orient: vertical ? 'vertical' : 'horizontal',
-    }
-  );
 }

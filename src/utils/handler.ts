@@ -34,7 +34,8 @@ export function createSelectionHandler(
   selectionManager: powerbi.extensibility.ISelectionManager,
   selectImpl: (v: ISetLike<IPowerBIElem> | null) => void
 ) {
-  return (selection: ISetLike<IPowerBIElem> | null) => {
+  return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
+    evt.stopPropagation();
     if (!selection) {
       selectionManager.clear().then(() => {
         selectImpl(null);
