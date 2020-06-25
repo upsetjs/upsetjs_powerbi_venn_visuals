@@ -13,7 +13,7 @@ import {
   isSetCombination,
 } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
-import { IPowerBIElem, isPowerBiSetLike } from './interfaces';
+import { IPowerBIElem } from './interfaces';
 
 export function createContextMenuHandler(selectionManager: powerbi.extensibility.ISelectionManager) {
   return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
@@ -21,7 +21,7 @@ export function createContextMenuHandler(selectionManager: powerbi.extensibility
     if (!selection) {
       return;
     }
-    const sel = isPowerBiSetLike(selection) ? selection : selection.elems[0];
+    const sel = selection.elems[0];
     const id = sel && sel.s != null ? sel.s : {};
     selectionManager.showContextMenu(id, {
       x: evt.clientX,
@@ -33,34 +33,19 @@ export function createContextMenuHandler(selectionManager: powerbi.extensibility
 export function createSelectionHandler(
   selectionManager: powerbi.extensibility.ISelectionManager,
   selectImpl: (v: ISetLike<IPowerBIElem> | null) => void
-) {
-  return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
-    evt.stopPropagation();
+): OnHandler {
+  return (selection: ISetLike<IPowerBIElem> | null) => {
     if (!selection) {
       selectionManager.clear().then(() => {
         selectImpl(null);
       });
     } else {
-      const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
+      const sel = selection.elems.map((e) => e.s!);
       selectionManager.select(sel).then(() => {
         selectImpl(selection);
       });
     }
   };
-}
-
-function toHeader(s: ISetLike<any>) {
-  switch (s.type) {
-    case 'composite':
-      return 'Set Composite';
-    case 'distinctIntersection':
-    case 'intersection':
-      return 'Set Intersection';
-    case 'union':
-      return 'Set Union';
-    default:
-      return 'Set';
-  }
 }
 
 function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility.VisualTooltipDataItem[] {
@@ -111,14 +96,14 @@ export function createTooltipHandler(
     const bb = target.getBoundingClientRect();
     const coordinates = [evt.clientX - bb.left - target.clientLeft, evt.clientY - bb.top - target.clientTop];
 
-    const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
+    const sel = selection.elems.map((e) => e.s!);
     return <powerbi.extensibility.TooltipShowOptions>{
       isTouchEvent: false,
       coordinates,
       dataItems: [
         {
-          header: toHeader(selection),
-          displayName: selection.name,
+          header: selection.name,
+          displayName: 'Size',
           value: selection.cardinality.toLocaleString(),
         },
         ...(isSetCombination(selection) && selection.degree > 1
@@ -137,6 +122,9 @@ export function createTooltipHandler(
     if (timeout >= 0) {
       clearTimeout(timeout);
       timeout = -1;
+    }
+    if (!host.tooltipService.enabled()) {
+      return;
     }
     if (!s) {
       visible = false;
@@ -158,6 +146,9 @@ export function createTooltipHandler(
     (s, evt, addons) => {
       if (!visible) {
         return onHover(s, evt, addons);
+      }
+      if (!host.tooltipService.enabled()) {
+        return;
       }
       if (!s) {
         return;

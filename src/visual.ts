@@ -13,10 +13,11 @@ import {
   createVennJSAdapter,
 } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
-import { extractElems, injectSelectionId, resolveSelection, extractSets, mergeColors } from './utils/model';
+import { extractElems, resolveSelection, extractSets, resolveElementsFromSelection } from './utils/model';
+import { mergeColors } from './utils/colors';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
-import { IPowerBIElem } from './utils/interfaces';
+import { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
 import { layout } from '@upsetjs/venn.js';
 
 const adapter = createVennJSAdapter(layout);
@@ -33,6 +34,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly onMouseMove: undefined | OnHandler;
 
   private props: VennDiagramProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
+  private elems: IPowerBIElems = [];
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
@@ -43,6 +45,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
     this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
       this.props.selection = s;
+      this.render();
+    });
+    this.selectionManager.registerOnSelectCallback((ids) => {
+      this.props.selection = resolveElementsFromSelection(ids, this.elems);
       this.render();
     });
     this.target.addEventListener('click', (evt) => this.setSelection(null, evt, []));
@@ -95,15 +101,14 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     const areDummyValues = dataView.categorical!.categories.length === 0;
 
     // handle window
-    const elems = extractElems(dataView.categorical!, this.host);
+    this.elems = extractElems(dataView.categorical!, this.host);
 
     const sets =
-      elems.length === 0
+      this.elems.length === 0
         ? []
         : extractSets(
-            elems,
+            this.elems,
             dataView.categorical!,
-            this.host,
             this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
           );
 
@@ -118,21 +123,18 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       requestAnimationFrame(() => this.host.fetchMoreData());
     }
 
-    const combinations = injectSelectionId(
-      generateCombinations(sets, {
-        type: 'distinctIntersection',
-        min: 1,
-        empty: true,
-        mergeColors,
-      }),
-      this.host
-    );
+    const combinations = generateCombinations(sets, {
+      type: 'distinctIntersection',
+      min: 1,
+      empty: true,
+      mergeColors,
+    });
     if (combinations.length === 0) {
       return false;
     }
 
     const selection = resolveSelection(
-      elems,
+      this.elems,
       sets,
       combinations,
       dataView.categorical!,

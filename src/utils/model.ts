@@ -6,14 +6,7 @@
  */
 import { asSets, ISetCombinations } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
-import {
-  IPowerBIElem,
-  IPowerBIElems,
-  IPowerBISet,
-  IPowerBISetCombination,
-  IPowerBISetCombinations,
-  IPowerBISets,
-} from './interfaces';
+import { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';
 
 export function isSelection(s: powerbi.extensibility.ISelectionId): s is powerbi.visuals.ISelectionId {
   return s != null && typeof (<powerbi.visuals.ISelectionId>s).includes === 'function';
@@ -58,6 +51,14 @@ function deriveHighlight(elems: IPowerBIElems, data: powerbi.DataViewCategorical
     .filter((v): v is IPowerBIElem => v !== null);
 }
 
+export function resolveElementsFromSelection(sel: readonly powerbi.extensibility.ISelectionId[], elems: IPowerBIElems) {
+  if (sel.length === 0) {
+    return null;
+  }
+  // resolve to the elements that are included
+  return elems.filter((elem) => sel.some((s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s))));
+}
+
 export function resolveSelection(
   elems: IPowerBIElems,
   sets: IPowerBISets,
@@ -73,24 +74,7 @@ export function resolveSelection(
   if (!interactive) {
     return null;
   }
-  const sel = selectionManager.getSelectionIds();
-  if (sel.length === 0) {
-    return null;
-  }
-  if (sel.length === 1) {
-    // could be a set or a combination elem
-    const s = sets.find((s) => s.s === sel[0]);
-    if (s) {
-      return s;
-    }
-    const c = combinations.find((s) => s.s === sel[0]);
-    if (c) {
-      return c;
-    }
-  }
-
-  // resolve to the elements that are included
-  return elems.filter((elem) => sel.some((s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s))));
+  return resolveElementsFromSelection(selectionManager.getSelectionIds(), elems);
 }
 
 export function extractElems(
@@ -129,7 +113,6 @@ export function extractElems(
 export function extractSets(
   elems: IPowerBIElems,
   data: powerbi.DataViewCategorical,
-  host: powerbi.extensibility.visual.IVisualHost,
   setColorObjectName?: string
 ): ReadonlyArray<IPowerBISet> {
   // just the sets
@@ -137,7 +120,6 @@ export function extractSets(
   return asSets(
     sets
       .map((value) => {
-        const builder = host.allowInteractions ? host.createSelectionIdBuilder() : null;
         const setElems: IPowerBIElem[] = [];
         value.values.forEach((v, i) => {
           if (!v) {
@@ -146,14 +128,10 @@ export function extractSets(
           // trueish
           const elem = elems[i];
           setElems.push(elem);
-          if (builder && elem.cat) {
-            builder.withCategory(elem.cat, elem.i);
-          }
         });
         return {
           value,
           name: value.source.displayName,
-          s: builder ? builder.createSelectionId() : undefined,
           elems: setElems,
           color:
             setColorObjectName && value.source.objects && value.source.objects[setColorObjectName]
@@ -163,45 +141,4 @@ export function extractSets(
       })
       .reverse()
   );
-}
-
-export function injectSelectionId(
-  combinations: readonly IPowerBISetCombination[],
-  host: powerbi.extensibility.visual.IVisualHost
-): ReadonlyArray<IPowerBISetCombination> {
-  if (!host.allowInteractions) {
-    return combinations;
-  }
-  combinations.forEach((c) => {
-    const builder = host.createSelectionIdBuilder();
-    c.elems.forEach((elem) => {
-      if (elem.cat) {
-        builder.withCategory(elem.cat, elem.i);
-      }
-    });
-    c.s = builder.createSelectionId();
-  });
-  return combinations;
-}
-
-function parseColor(color?: string) {
-  if (!color) {
-    return [255, 255, 255];
-  }
-  const hex = color.match(/#([\da-f]{2})([\da-f]{2})([\da-f]{2})/i);
-  if (hex) {
-    return [Number.parseInt(hex[1], 16), Number.parseInt(hex[2], 16), Number.parseInt(hex[3], 16)];
-  }
-  return [255, 255, 255];
-}
-
-export function mergeColors(colors: readonly (string | undefined)[]) {
-  if (colors.length === 1) {
-    return colors[0];
-  }
-  const rgb = colors.map(parseColor);
-  const r = Math.floor(rgb.reduce((acc, v) => acc + v[0], 0) / rgb.length);
-  const g = Math.floor(rgb.reduce((acc, v) => acc + v[1], 0) / rgb.length);
-  const b = Math.floor(rgb.reduce((acc, v) => acc + v[2], 0) / rgb.length);
-  return `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
 }

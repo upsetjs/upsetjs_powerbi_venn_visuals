@@ -86,6 +86,7 @@ export class UpSetFontSizeSettings {
   barLabel = 7; // pt
   chartLabel = 12; // pt
   setLabel = 12; // pt
+  valueLabel = 10; // pt
 
   generate() {
     return {
@@ -94,6 +95,7 @@ export class UpSetFontSizeSettings {
         barLabel: `${this.barLabel}pt`,
         chartLabel: `${this.chartLabel}pt`,
         setLabel: `${this.setLabel}pt`,
+        valueLabel: `${this.valueLabel}pt`,
       },
     };
   }
@@ -129,6 +131,8 @@ function generateAutoPowerBITheme(
 }
 
 export class UpSetCombinationSettings implements GenerateSetCombinationsOptions {
+  show = true;
+  displayName = 'Intersections';
   type: 'intersection' | 'union' = 'intersection';
   min = 0;
   max = 6;
@@ -137,10 +141,15 @@ export class UpSetCombinationSettings implements GenerateSetCombinationsOptions 
   limit = 100;
 
   generate(elems: IPowerBIElems): GenerateSetCombinationsOptions {
-    return Object.assign({}, this, {
-      order: fixOrder(this.order),
+    return {
+      type: this.type,
+      min: this.min,
+      max: this.max,
+      empty: this.empty,
+      limit: this.limit,
+      order: <'cardinality'>fixOrder(this.order),
       elems,
-    });
+    };
   }
 }
 
