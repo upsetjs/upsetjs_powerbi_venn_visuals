@@ -6,20 +6,22 @@ This is a [PowerBI Custom Visual](https://powerbi.microsoft.com/en-us/developers
 
 This package is part of the UpSet.js ecosystem located at the main [Github Monorepo](https://github.com/upsetjs/upsetjs).
 
-TODO
+![Venn Report](https://user-images.githubusercontent.com/4129778/85765896-d6417900-b716-11ea-8b89-8ae01f6456a0.png)
+
+see also [Sample PBIX file](https://upset.js.org/integrations/powerbi/got_venn.pbix)
 
 ## Installation
 
-Download the latest package from [https://github.com/upsetjs/upsetjs_powerbi_visuals/releases/latest/download/upsetjs.pbiviz](https://github.com/upsetjs/upsetjs_powerbi_visuals/releases/latest/download/upsetjs.pbiviz) and install into your PowerBI environment.
+Download the latest package from [https://upset.js.org/integrations/powerbi/upsetjs_venn.pbiviz](https://upset.js.org/integrations/powerbi/upsetjs_venn.pbiviz) and install into your PowerBI environment.
 
 ## Data Roles
 
-The UpSet.js visual has three data roles:
+The UpSet.js visual has two data roles:
 
 - `Elements` exactly one grouping with a unique identifier for each row (e.g., a name)
 - `Sets` one or more measures or groupings which represent the sets. When it's value at row `i` results in a trueish value (e.g., 1, true, ...) UpSet.js will interpret it that the element at row `i` is part of this set
 
-In addition, the visual supports various styling options including the customization of how the set combinations are generated.
+In addition, the visual supports various styling options including the customization of whether a Venn or an Euler diagram should be generated.
 
 ## Interaction
 
@@ -41,21 +43,12 @@ npm run pbiviz -- --install-cert
 npm start
 ```
 
-### Building
+### Commands
 
 ```sh
 npm run lint
 npm run build
-```
-
-### Release
-
-via release-it
-
-```sh
-npm run release:major
-npm run release:minor
-npm run release:patch
+npm run release
 ```
 
 ## Privacy Policy
