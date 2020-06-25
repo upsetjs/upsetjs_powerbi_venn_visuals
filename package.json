@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@babel/runtime-corejs3": "^7.10.3",
-    "@upsetjs/bundle": "~1.4.0",
+    "@upsetjs/bundle": "~1.5.0",
     "@upsetjs/venn.js": "^1.3.0",
     "core-js": "^3.6.5",
     "powerbi-visuals-api": "^3.2.0",

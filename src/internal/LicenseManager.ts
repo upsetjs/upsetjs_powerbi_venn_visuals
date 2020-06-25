@@ -75,7 +75,9 @@ export class LicenseManager {
   readonly #url: string;
 
   constructor(cypherKey: string, url = URL) {
+    // {publicKey: string, url = URL) {
     this.#cypherKey = cypherKey;
+    // this.#publicKey = window.crypto.subtle.importKey('jwk', keyData);
     this.#url = url;
     this.contact = url;
   }

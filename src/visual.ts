@@ -14,10 +14,10 @@ import {
 } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
 import { extractElems, resolveSelection, extractSets, resolveElementsFromSelection } from './utils/model';
-import { mergeColors } from './utils/colors';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
 import { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
+import { mergeColors } from '@upsetjs/bundle';
 import { layout } from '@upsetjs/venn.js';
 
 const adapter = createVennJSAdapter(layout);
@@ -51,7 +51,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.props.selection = resolveElementsFromSelection(ids, this.elems);
       this.render();
     });
-    this.target.addEventListener('click', (evt) => this.setSelection(null, evt, []));
   }
 
   private render() {
