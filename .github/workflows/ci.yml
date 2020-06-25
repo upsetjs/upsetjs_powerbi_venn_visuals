@@ -27,7 +27,7 @@ jobs:
       - run: |
           mkdir -p public/integrations/powerbi
           cp dist/upsetjs_venn.pbiviz public/integrations/powerbi/
-          cp examples/got_venn.pbix public/integrations/powerbi/
+          cp samples/got.pbix public/integrations/powerbi/got_venn.pbix
 
       - name: Deploy Master
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
