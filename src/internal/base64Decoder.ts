@@ -48,6 +48,9 @@ export default function base64Decoder(key: string) {
     if (!code || code.trim().length === 0) {
       return null;
     }
+    if (!code.includes(':')) {
+      return null;
+    }
     // decode each : part
     return code
       .split(':')

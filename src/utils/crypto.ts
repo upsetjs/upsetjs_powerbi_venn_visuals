@@ -1,3 +1,16 @@
+export function generateKeyPair(algorithm: RsaHashedKeyGenParams | EcKeyGenParams | DhKeyGenParams) {
+  if (!self.crypto || !self.crypto.subtle) {
+    return () => Promise.resolve([null, null]);
+  }
+  return self.crypto.subtle.generateKey(algorithm, true, ['sign', 'verify']).then((key) => {
+    const pair = <CryptoKeyPair>key;
+    return Promise.all([
+      self.crypto.subtle.exportKey('jwk', pair.privateKey),
+      self.crypto.subtle.exportKey('jwk', pair.publicKey),
+    ]);
+  });
+}
+
 export function decodeAndVerifySignature(
   key: JsonWebKey,
   importAlgorithm:
@@ -16,12 +29,11 @@ export function decodeAndVerifySignature(
 
   return (code: string) => {
     try {
-      if (!code.includes(':')) {
-        return null;
+      if (!code.includes('$')) {
+        return Promise.resolve(null);
       }
-      const text = btoa(code.slice(0, code.indexOf(':')));
-      const sig = new Uint8Array(Array.from(btoa(code.slice(code.indexOf(':') + 1))).map((d) => d.charCodeAt(0)));
-      const payload = atob(text);
+      const payload = atob(code.slice(0, code.indexOf('$')));
+      const sig = new Uint8Array(Array.from(atob(code.slice(code.indexOf('$') + 1))).map((d) => d.charCodeAt(0)));
 
       const encoded = new TextEncoder().encode(payload);
 
@@ -29,7 +41,9 @@ export function decodeAndVerifySignature(
         keyPromise
           .then((key) => self.crypto.subtle.verify(verifyAlgorithm, key, sig, encoded))
           .then((verified) => (verified ? payload : null))
-      ).catch(() => null);
+      ).catch((_error) => {
+        return null;
+      });
     } catch {
       return Promise.resolve(null);
     }
@@ -73,8 +87,10 @@ export function signAndEncode(
       return Promise.resolve(
         keyPromise
           .then((key) => self.crypto.subtle.sign(signAlgorithm, key, encoded))
-          .then((sig) => `${btoa(payload)}:${btoa(String.fromCharCode(...new Uint8Array(sig)))}`)
-      ).catch(() => null);
+          .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode(...new Uint8Array(sig)))}`)
+      ).catch((_error) => {
+        return null;
+      });
     } catch {
       return Promise.resolve(payload);
     }
@@ -95,7 +111,9 @@ export function signAndEncodeECDA(key: JsonWebKey) {
   );
 }
 
-export function compositeDecoder(decoder: readonly ((code: string) => Promise<string | null>)[]) {
+export function compositeDecoder(
+  decoder: readonly ((code: string) => Promise<string | null>)[]
+): (code: string) => Promise<string | null> {
   return (code: string) => {
     if (decoder.length === 1) {
       return decoder[0](code);
@@ -104,6 +122,7 @@ export function compositeDecoder(decoder: readonly ((code: string) => Promise<st
       return Promise.resolve(null);
     }
     const remaining = decoder.slice();
+
     function next(r: string | null): Promise<string | null> {
       if (r != null || remaining.length === 0) {
         return Promise.resolve(r);
