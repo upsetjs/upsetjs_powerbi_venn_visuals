@@ -6,12 +6,19 @@
  */
 
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
-import { LicenseManager } from './internal/LicenseManager';
+import LicenseSettings from './utils/LicenseSettings';
+import { compositeDecoder, decodeAndVerifyECDSASignature } from './utils/crypto';
+import base64Decoder from './internal/base64Decoder';
 import { UpSetBaseThemeSettings, UpSetFontSizeSettings } from './utils/settings';
 import secretsJson from './secrets.json';
 
+const decoder = compositeDecoder([
+  base64Decoder(secretsJson.key),
+  decodeAndVerifyECDSASignature(secretsJson.ecdsa.public),
+]);
+
 export default class VisualSettings extends dataViewObjectsParser.DataViewObjectsParser {
-  readonly license = new LicenseManager(secretsJson.key);
+  readonly license = new LicenseSettings(decoder, 'https://dataviz.boutique');
   readonly theme = new UpSetThemeSettings();
   readonly fonts = new UpSetFontSizeSettings();
   readonly style = new UpSetStyleSettings();

@@ -109,6 +109,7 @@ function generatePowerBITheme(colorPalette: powerbi.extensibility.ISandboxExtend
     selectionColor: '',
     opacity: 1,
     hasSelectionOpacity: 0.4,
+    filled: true,
   };
 }
 
@@ -127,6 +128,7 @@ function generateAutoPowerBITheme(
     selectionColor: c,
     opacity: 1,
     hasSelectionOpacity: 0.4,
+    filled: true,
   };
 }
 

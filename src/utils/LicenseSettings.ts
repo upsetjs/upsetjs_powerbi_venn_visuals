@@ -4,55 +4,9 @@
  *
  * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
  */
-
 import powerbi from 'powerbi-visuals-api';
 
-function utf8Decode(e: string) {
-  let t = '';
-  let n = 0;
-  // 6 bit encoding
-  while (n < e.length) {
-    const r = e.charCodeAt(n++);
-    if (r < 128) {
-      t += String.fromCharCode(r);
-    } else if (r > 191 && r < 224) {
-      const c2 = e.charCodeAt(n++);
-      t += String.fromCharCode(((r & 31) << 6) | (c2 & 63));
-    } else {
-      const c2 = e.charCodeAt(n++);
-      const c3 = e.charCodeAt(n++);
-      t += String.fromCharCode(((r & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-    }
-  }
-  return t;
-}
-
-function decode(e: string, key: string) {
-  let t = '';
-  let f = 0;
-  e = e.replace(/[^A-Za-z0-9+/=]/g, '');
-  while (f < e.length) {
-    const s = key.indexOf(e.charAt(f++));
-    const o = key.indexOf(e.charAt(f++));
-    const u = key.indexOf(e.charAt(f++));
-    const a = key.indexOf(e.charAt(f++));
-    const n = (s << 2) | (o >> 4);
-    const r = ((o & 15) << 4) | (u >> 2);
-    const i = ((u & 3) << 6) | a;
-    t = t + String.fromCharCode(n);
-    if (u !== 64) {
-      t = t + String.fromCharCode(r);
-    }
-    if (a !== 64) {
-      t = t + String.fromCharCode(i);
-    }
-  }
-  t = utf8Decode(t);
-  return t;
-}
-
-function isValidDate(license: string, key: string) {
-  const decoded = decode(license, key);
+function isValidDate(decoded: string) {
   if (!/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/gm.test(decoded)) {
     return null;
   }
@@ -64,20 +18,16 @@ function isValidDate(license: string, key: string) {
   return new Date(year, month - 1, day);
 }
 
-const URL = 'https://dataviz.boutique';
-
-export class LicenseManager {
+export default class LicenseSettings {
   code = '';
   info = '';
   contact = '';
 
-  readonly #cypherKey: string;
+  readonly #decoder: (code: string) => Promise<string | null>;
   readonly #url: string;
 
-  constructor(cypherKey: string, url = URL) {
-    // {publicKey: string, url = URL) {
-    this.#cypherKey = cypherKey;
-    // this.#publicKey = window.crypto.subtle.importKey('jwk', keyData);
+  constructor(decoder: (code: string) => Promise<string | null>, url: string) {
+    this.#decoder = decoder;
     this.#url = url;
     this.contact = url;
   }
@@ -100,23 +50,23 @@ export class LicenseManager {
   }
 
   private deriveLicenseState(
+    decoded: string | null,
     host: powerbi.extensibility.visual.IVisualHost
   ): 'no-license' | 'invalid' | 'valid' | 'expired' {
-    if (this.code.trim().length === 0) {
+    if (!decoded || decoded.trim().length === 0) {
       this.updateInfo(host, '');
       return 'no-license';
     }
-    if (!this.code.includes(':')) {
+    if (!decoded.includes(':')) {
       this.updateInfo(host, 'invalid license code');
       return 'invalid';
     }
-    const [dateCode, customerCode] = this.code.split(':');
-    const expirationDate = isValidDate(dateCode, this.#cypherKey);
+    const [dateString, customer] = decoded.split(':');
+    const expirationDate = isValidDate(dateString);
     if (!expirationDate) {
       this.updateInfo(host, 'invalid license code');
       return 'invalid';
     }
-    const customer = decode(customerCode, this.#cypherKey);
     const today = new Date();
     if (today <= expirationDate) {
       const date = expirationDate.toDateString();
@@ -132,13 +82,14 @@ export class LicenseManager {
     host: powerbi.extensibility.visual.IVisualHost,
     usesProFeatures: () => boolean
   ) {
-    const state = this.deriveLicenseState(host);
-    if (state === 'valid' || !usesProFeatures()) {
-      this.resetWatermark(target);
-      return false;
-    }
-    applyWatermark(target, this.#url);
-    return true;
+    return this.#decoder(this.code).then((decoded) => {
+      const state = this.deriveLicenseState(decoded, host);
+      if (state === 'valid' || !usesProFeatures()) {
+        this.resetWatermark(target);
+      } else {
+        applyWatermark(target, this.#url);
+      }
+    });
   }
 
   resetWatermark(target: HTMLElement) {
