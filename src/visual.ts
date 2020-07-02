@@ -190,9 +190,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     options: powerbi.EnumerateVisualObjectInstancesOptions
   ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
     if (options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME) {
-      const r = this.settings.theme.enumerateSetColors(this.props.sets);
-      console.log(r);
-      return r;
+      return this.settings.theme.enumerateSetColors(this.props.sets);
     }
     return VisualSettings.enumerateObjectInstances(this.settings, options);
   }
