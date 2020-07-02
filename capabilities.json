@@ -84,11 +84,11 @@
                 "value": "light"
               },
               {
-                "displayName": "PowerBI",
+                "displayName": "Individual Colors",
                 "value": "powerbi"
               },
               {
-                "displayName": "PowerBI Auto",
+                "displayName": "Single Color",
                 "value": "auto"
               },
               {
