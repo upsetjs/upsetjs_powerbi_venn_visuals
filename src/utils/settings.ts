@@ -8,6 +8,7 @@
 import powerbi from 'powerbi-visuals-api';
 import { fillDefaults, ISets, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
 import { IPowerBISet, IPowerBISets, IPowerBIElem, IPowerBIElems } from './interfaces';
+import { UniqueColorPalette } from './UniqueColorPalette';
 
 export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 
@@ -24,7 +25,7 @@ export class UpSetBaseThemeSettings {
   textColor = defaults.textColor;
   selectionColor = defaults.selectionColor;
 
-  generate(colorPalette: powerbi.extensibility.ISandboxExtendedColorPalette, data: powerbi.DataViewCategorical) {
+  generate(colorPalette: UniqueColorPalette, data: powerbi.DataViewCategorical) {
     const keys = (<(keyof UpSetBaseThemeSettings)[]>Object.keys(this)).filter(
       (d) => typeof this[d] === 'string' || typeof this[d] === 'number'
     );
@@ -56,10 +57,12 @@ export class UpSetBaseThemeSettings {
         instances: [],
       };
     }
+    // reverse since after extractSets they are reversed again
     return {
-      instances: (<IPowerBISets>(<unknown>sets)).map((set) =>
-        setToObjectInstance(set, UpSetBaseThemeSettings.SET_COLORS_OBJECT_NAME)
-      ),
+      instances: (<IPowerBISets>(<unknown>sets))
+        .slice()
+        .reverse()
+        .map((set) => setToObjectInstance(set, UpSetBaseThemeSettings.SET_COLORS_OBJECT_NAME)),
     };
   }
 }
@@ -101,11 +104,11 @@ export class UpSetFontSizeSettings {
   }
 }
 
-function generatePowerBITheme(colorPalette: powerbi.extensibility.ISandboxExtendedColorPalette) {
-  const c = colorPalette.foreground.value;
+function generatePowerBITheme(colorPalette: UniqueColorPalette) {
+  const c = colorPalette.base.foreground.value;
   return {
     color: c,
-    textColor: colorPalette.foregroundButton.value,
+    textColor: colorPalette.base.foregroundButton.value,
     selectionColor: '',
     opacity: 1,
     hasSelectionOpacity: 0.4,
@@ -113,10 +116,7 @@ function generatePowerBITheme(colorPalette: powerbi.extensibility.ISandboxExtend
   };
 }
 
-function generateAutoPowerBITheme(
-  colorPalette: powerbi.extensibility.ISandboxExtendedColorPalette,
-  data: powerbi.DataViewCategorical
-) {
+function generateAutoPowerBITheme(colorPalette: UniqueColorPalette, data: powerbi.DataViewCategorical) {
   if (!data.categories || data.categories.length === 0) {
     return {};
   }
@@ -124,7 +124,7 @@ function generateAutoPowerBITheme(
   const c = colorPalette.getColor(source.queryName || source.displayName).value;
   return {
     color: c,
-    textColor: colorPalette.foregroundButton.value,
+    textColor: colorPalette.base.foregroundButton.value,
     selectionColor: c,
     opacity: 1,
     hasSelectionOpacity: 0.4,

@@ -7,6 +7,7 @@
 import { asSets, ISetCombinations } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
 import { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';
+import { UniqueColorPalette } from './UniqueColorPalette';
 
 export function isSelection(s: powerbi.extensibility.ISelectionId): s is powerbi.visuals.ISelectionId {
   return s != null && typeof (<powerbi.visuals.ISelectionId>s).includes === 'function';
@@ -113,10 +114,23 @@ export function extractElems(
 export function extractSets(
   elems: IPowerBIElems,
   data: powerbi.DataViewCategorical,
+  colorPalette: UniqueColorPalette,
   setColorObjectName?: string
 ): ReadonlyArray<IPowerBISet> {
   // just the sets
   const sets = data.values ? data.values.filter((d) => d.source?.roles?.sets) : [];
+
+  const resolveColor = (value: powerbi.DataViewValueColumn) => {
+    if (!setColorObjectName) {
+      return undefined;
+    }
+    // reserve color in any case
+    const base = colorPalette.getColor(value.source.queryName!).value;
+    if (value.source.objects && value.source.objects[setColorObjectName]) {
+      return (<powerbi.Fill>value.source.objects[setColorObjectName].fill).solid!.color;
+    }
+    return base;
+  };
   return asSets(
     sets
       .map((value) => {
@@ -133,10 +147,7 @@ export function extractSets(
           value,
           name: value.source.displayName,
           elems: setElems,
-          color:
-            setColorObjectName && value.source.objects && value.source.objects[setColorObjectName]
-              ? (<powerbi.Fill>value.source.objects[setColorObjectName].fill).solid!.color
-              : undefined,
+          color: resolveColor(value),
         };
       })
       .reverse()

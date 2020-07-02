@@ -19,6 +19,7 @@ import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
 import { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
 import { mergeColors } from '@upsetjs/bundle';
 import { layout } from '@upsetjs/venn.js';
+import { UniqueColorPalette } from './utils/UniqueColorPalette';
 
 const adapter = createVennJSAdapter(layout);
 
@@ -32,6 +33,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly setSelection: OnHandler;
   private readonly onHover: undefined | OnHandler;
   private readonly onMouseMove: undefined | OnHandler;
+  private readonly colorPalette: UniqueColorPalette;
 
   private props: VennDiagramProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
   private elems: IPowerBIElems = [];
@@ -39,8 +41,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
     this.selectionManager = options.host.createSelectionManager();
+    this.colorPalette = new UniqueColorPalette(options.host.colorPalette);
     this.host = options.host;
     this.renderPlaceholder();
+
     [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host);
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
     this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
@@ -89,11 +93,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     this.settings.license.resetWatermark(this.target);
 
     if (options.dataViews.length === 0) {
+      this.colorPalette.clear();
       return false;
     }
     const dataView = options.dataViews[0];
     this.settings = VisualSettings.parse(dataView);
     if (!dataView.categorical || !dataView.categorical.categories) {
+      this.colorPalette.clear();
       return false;
     }
 
@@ -108,10 +114,12 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         : extractSets(
             this.elems,
             dataView.categorical!,
+            this.colorPalette,
             this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
           );
 
     if (sets.length === 0 || !dataView.categorical!.values) {
+      this.colorPalette.clear();
       return false;
     }
 
@@ -151,7 +159,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         exportButtons: false,
       },
       this.settings.fonts.generate(),
-      this.settings.theme.generate(this.host.colorPalette, dataView.categorical!),
+      this.settings.theme.generate(this.colorPalette, dataView.categorical!),
       this.settings.style
     );
 
@@ -182,7 +190,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     options: powerbi.EnumerateVisualObjectInstancesOptions
   ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
     if (options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME) {
-      return this.settings.theme.enumerateSetColors(this.props.sets);
+      const r = this.settings.theme.enumerateSetColors(this.props.sets);
+      console.log(r);
+      return r;
     }
     return VisualSettings.enumerateObjectInstances(this.settings, options);
   }
