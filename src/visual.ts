@@ -54,7 +54,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private render() {
-    if (this.settings.style.mode !== 'venn' || this.props.sets.length > 3) {
+    if (this.settings.style.mode !== 'venn' || this.props.sets.length > 5) {
       this.props.layout = adapter;
     } else {
       delete this.props.layout;

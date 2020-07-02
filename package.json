@@ -34,28 +34,28 @@
     "package": "npm run build"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.10.3",
-    "@upsetjs/bundle": "~1.5.0",
+    "@babel/runtime-corejs3": "^7.10.4",
+    "@upsetjs/bundle": "~1.6.2",
     "@upsetjs/venn.js": "^1.3.0",
     "core-js": "^3.6.5",
     "powerbi-visuals-api": "^3.2.0",
     "powerbi-visuals-utils-dataviewutils": "^2.2.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^3.4.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^3.4.0",
-    "@typescript-eslint/parser": "^3.4.0",
+    "@typescript-eslint/eslint-plugin": "^3.5.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^3.5.0",
+    "@typescript-eslint/parser": "^3.5.0",
     "eslint": "^7.3.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "powerbi-visuals-tools": "^3.1.14",
     "powerbi-visuals-webpack-plugin": "2.2.4",
     "prettier": "^2.0.5",
-    "release-it": "^13.6.3",
+    "release-it": "^13.6.4",
     "rimraf": "^3.0.2",
     "ts-loader": "^7.0.5",
     "tslint": "^6.1.2",
     "tslint-microsoft-contrib": "^6.2.0",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.6"
   }
 }
