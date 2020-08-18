@@ -20,7 +20,7 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "test": "echo no tests",
-    "build": "npx shx rm -R dist && pbiviz package && npx shx cp dist/upSetJSVenn* dist/upsetjs_venn.pbiviz",
+    "build": "npx shx rm -rf dist && pbiviz package && npx shx cp dist/upSetJSVenn* dist/upsetjs_venn.pbiviz",
     "lint": "npm run eslint && npm run prettier",
     "fix": "npm run eslint:fix && npm run prettier:write",
     "prettier:impl": "prettier \"*.{md,json,yml}\" .eslintrc.js .prettierrc.js \"{src,scripts,.github}/**\"",
