@@ -51,6 +51,18 @@ npm run build
 npm run release
 ```
 
+### Submission
+
+1. Create a new release
+1. Update the sample dataset with the latest version
+1. Send a mail to pbivizsubmit@microsoft.com.
+   subject: Ultimate Venn Diagram vX.X.X
+   content: ?
+   attachments: the pbiviz and the sample report
+1. Wait for app package XML response
+1. Go to https://partner.microsoft.com/de-de/dashboard/office/products/dbd65d26-f58a-4ecb-be91-150f989612f0/packages and upload the new XML file
+1. Check the package and Publish
+
 ## Privacy Policy
 
 UpSet.js is a client only library. The library or any of its integrations doesn't track you or transfers your data to any server. The uploaded data in the app are stored in your browser only using IndexedDB. The Tableau extension can run in a sandbox environment prohibiting any server requests. However, as soon as you export your session within the app to an external service (e.g., Codepen.io) your data will be transferred.
