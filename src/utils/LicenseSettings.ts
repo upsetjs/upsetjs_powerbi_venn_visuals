@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 import powerbi from 'powerbi-visuals-api';
 
@@ -107,17 +107,15 @@ function applyWatermark(target: HTMLElement, text: string) {
   const y = height / 2;
 
   const grey = `<text transform='translate(${x},${y}) rotate(-45)'>${text}</text>`;
-  const green = `<text transform='translate(${
-    x + size * 0.5
-  },${y}) rotate(-45)' fill='rgb(190, 227, 190)'>${text}</text>`;
+  const green = `<text transform='translate(${x + size * 0.5
+    },${y}) rotate(-45)' fill='rgb(190, 227, 190)'>${text}</text>`;
   const white = `<text transform='translate(${x + size * 1},${y}) rotate(-45)' fill='white'>${text}</text>`;
   const white2 = `<text transform='translate(${x + size * -0.5},${y}) rotate(-45)' fill='white'>${text}</text>`;
   const style = `fill: black; font-size: ${fontSize}; text-anchor: middle; dominant-baseline: central; fill-opacity: ${opacity}`;
   const prefix = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1'`;
 
-  const url = `${prefix} height='${height}px' width='${
-    size * 1.5
-  }px'><g style='${style}'>${white}${grey}${green}${white2}</g></svg>")`;
+  const url = `${prefix} height='${height}px' width='${size * 1.5
+    }px'><g style='${style}'>${white}${grey}${green}${white2}</g></svg>")`;
 
   target.style.background = url;
 }

@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
@@ -24,7 +24,7 @@ export default class VisualSettings extends dataViewObjectsParser.DataViewObject
   readonly style = new UpSetStyleSettings();
 }
 
-export class UpSetThemeSettings extends UpSetBaseThemeSettings {}
+export class UpSetThemeSettings extends UpSetBaseThemeSettings { }
 
 export class UpSetStyleSettings {
   mode: 'venn' | 'euler' = 'venn';

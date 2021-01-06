@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
 import {
@@ -112,11 +112,11 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.elems.length === 0
         ? []
         : extractSets(
-            this.elems,
-            dataView.categorical!,
-            this.colorPalette,
-            this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
-          );
+          this.elems,
+          dataView.categorical!,
+          this.colorPalette,
+          this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+        );
 
     if (sets.length === 0 || !dataView.categorical!.values) {
       this.colorPalette.clear();

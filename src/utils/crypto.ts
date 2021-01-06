@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
 export function generateKeyPair(algorithm: RsaHashedKeyGenParams | EcKeyGenParams | DhKeyGenParams) {
