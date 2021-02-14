@@ -112,11 +112,11 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.elems.length === 0
         ? []
         : extractSets(
-          this.elems,
-          dataView.categorical!,
-          this.colorPalette,
-          this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
-        );
+            this.elems,
+            dataView.categorical!,
+            this.colorPalette,
+            this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+          );
 
     if (sets.length === 0 || !dataView.categorical!.values) {
       this.colorPalette.clear();
