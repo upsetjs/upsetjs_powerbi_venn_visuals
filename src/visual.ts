@@ -47,6 +47,16 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
     [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host);
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
+    this.target.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      this.selectionManager.showContextMenu(
+        {},
+        {
+          x: e.clientX,
+          y: e.clientY,
+        }
+      );
+    });
     this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
       this.props.selection = s;
       this.render();

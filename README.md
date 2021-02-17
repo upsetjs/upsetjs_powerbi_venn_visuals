@@ -29,7 +29,7 @@ The UpSet.js visual reacts to selections from other widgets by highlighting the 
 
 ## Dev Environment
 
-see also https://docs.microsoft.com/en-us/power-bi/developer/visuals/custom-visual-develop-tutorial
+see also https://docs.microsoft.com/en-us/power-bi/developer/visuals/environment-setup
 
 ```sh
 npm i
