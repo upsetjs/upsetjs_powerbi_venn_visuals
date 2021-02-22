@@ -36,7 +36,7 @@
     "@babel/runtime-corejs3": "^7.12.13",
     "@upsetjs/bundle": "~1.9.1",
     "@upsetjs/venn.js": "^1.4.1",
-    "core-js": "^3.8.3",
+    "core-js": "^3.9.0",
     "powerbi-visuals-api": "^3.5.1",
     "powerbi-visuals-utils-dataviewutils": "^2.4.1"
   },
