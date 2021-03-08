@@ -33,7 +33,7 @@
     "package": "npm run build"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.12.13",
+    "@babel/runtime-corejs3": "^7.13.9",
     "@upsetjs/bundle": "~1.9.1",
     "@upsetjs/venn.js": "^1.4.1",
     "core-js": "^3.8.3",
