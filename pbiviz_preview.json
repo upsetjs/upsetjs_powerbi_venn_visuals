@@ -1,11 +1,11 @@
 {
   "visual": {
     "name": "@upsetjs/powerbi_visuals",
-    "displayName": "Ultimate Venn Diagram",
-    "guid": "upSetJSVenn61F43BDFCA024B13B6AC5BA73C9427B2",
+    "displayName": "Ultimate Venn Diagram (Preview)",
+    "guid": "upSetJSVenn61F43BDFCA024B13B6AC5BA73C9427B2_preview",
     "visualClassName": "Visual",
     "version": "1.9.0",
-    "icon": "assets/icon.png",
+    "icon": "assets/icon_preview.png",
     "description": "Venn diagrams allow one to show set intersections up to three sets",
     "supportUrl": "https://www.sgratzl.com",
     "gitHubUrl": "https://github.com/upsetjs/upsetjs_powerbi_venn_visuals"
@@ -16,7 +16,7 @@
     "email": "sam@sgratzl.com"
   },
   "assets": {
-    "icon": "assets/icon.png"
+    "icon": "assets/icon_preview.png"
   },
   "capabilities": "capabilities.json"
 }

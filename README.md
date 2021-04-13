@@ -12,7 +12,7 @@ see also [Sample PBIX file](https://upset.js.org/integrations/powerbi/got_venn.p
 
 ## Installation
 
-Download the latest package from [https://upset.js.org/integrations/powerbi/upsetjs_venn.pbiviz](https://upset.js.org/integrations/powerbi/upsetjs_venn.pbiviz) and install into your PowerBI environment.
+Download the latest package from [https://upset.js.org/integrations/powerbi/upsetjs_venn_preview.pbiviz](https://upset.js.org/integrations/powerbi/upsetjs_venn_preview.pbiviz) and install into your PowerBI environment.
 
 ## Data Roles
 
