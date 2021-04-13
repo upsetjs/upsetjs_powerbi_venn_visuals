@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es6: true,
   },
-  extends: ['prettier/@typescript-eslint', 'plugin:prettier/recommended'],
+  extends: ['prettier', 'plugin:prettier/recommended'],
   ignorePatterns: [],
   parser: '@typescript-eslint/parser',
   parserOptions: {
