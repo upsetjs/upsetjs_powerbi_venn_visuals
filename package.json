@@ -38,7 +38,7 @@
     "@upsetjs/bundle": "~1.9.1",
     "@upsetjs/venn.js": "^1.4.1",
     "core-js": "^3.12.1",
-    "powerbi-visuals-api": "^3.5.1",
+    "powerbi-visuals-api": "^3.8.0",
     "powerbi-visuals-utils-dataviewutils": "^2.4.1"
   },
   "devDependencies": {
