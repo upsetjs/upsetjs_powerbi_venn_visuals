@@ -14,9 +14,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-node2-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-node2-
             ${{ runner.OS }}-
       - name: copy example secret
         run: cp src/secrets.example.ts src/secrets.ts
