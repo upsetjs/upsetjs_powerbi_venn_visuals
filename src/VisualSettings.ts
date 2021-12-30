@@ -10,12 +10,9 @@ import LicenseSettings from './utils/LicenseSettings';
 import { compositeDecoder, decodeAndVerifyECDSASignature } from './utils/crypto';
 import base64Decoder from './internal/base64Decoder';
 import { UpSetBaseThemeSettings, UpSetFontSizeSettings } from './utils/settings';
-import secretsJson from './secrets.json';
+import secrets from './secrets';
 
-const decoder = compositeDecoder([
-  base64Decoder(secretsJson.key),
-  decodeAndVerifyECDSASignature(secretsJson.ecdsa.public),
-]);
+const decoder = compositeDecoder([base64Decoder(secrets.key), decodeAndVerifyECDSASignature(secrets.ecdsa.public)]);
 
 export default class VisualSettings extends dataViewObjectsParser.DataViewObjectsParser {
   readonly license = new LicenseSettings(decoder, 'https://dataviz.boutique');

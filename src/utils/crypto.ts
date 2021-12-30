@@ -5,29 +5,23 @@
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
-export function generateKeyPair(algorithm: RsaHashedKeyGenParams | EcKeyGenParams | DhKeyGenParams) {
+export function generateKeyPair(algorithm: RsaHashedKeyGenParams | EcKeyGenParams) {
   if (!self.crypto || !self.crypto.subtle) {
     return () => Promise.resolve([null, null]);
   }
   return self.crypto.subtle.generateKey(algorithm, true, ['sign', 'verify']).then((key) => {
     const pair = <CryptoKeyPair>key;
     return Promise.all([
-      self.crypto.subtle.exportKey('jwk', pair.privateKey),
-      self.crypto.subtle.exportKey('jwk', pair.publicKey),
+      self.crypto.subtle.exportKey('jwk', pair.privateKey!),
+      self.crypto.subtle.exportKey('jwk', pair.publicKey!),
     ]);
   });
 }
 
 export function decodeAndVerifySignature(
   key: JsonWebKey,
-  importAlgorithm:
-    | string
-    | RsaHashedImportParams
-    | EcKeyImportParams
-    | HmacImportParams
-    | DhImportKeyParams
-    | AesKeyAlgorithm,
-  verifyAlgorithm: string | RsaPssParams | EcdsaParams | AesCmacParams
+  importAlgorithm: string | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm,
+  verifyAlgorithm: string | RsaPssParams | EcdsaParams
 ) {
   if (!self.crypto || !self.crypto.subtle) {
     return () => Promise.resolve(null);
@@ -73,14 +67,8 @@ export function decodeAndVerifyECDSASignature(key: JsonWebKey) {
 
 export function signAndEncode(
   key: JsonWebKey,
-  importAlgorithm:
-    | string
-    | RsaHashedImportParams
-    | EcKeyImportParams
-    | HmacImportParams
-    | DhImportKeyParams
-    | AesKeyAlgorithm,
-  signAlgorithm: string | RsaPssParams | EcdsaParams | AesCmacParams
+  importAlgorithm: string | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm,
+  signAlgorithm: string | RsaPssParams | EcdsaParams
 ) {
   if (!self.crypto || !self.crypto.subtle) {
     return (text: string) => Promise.resolve(text);
@@ -94,7 +82,7 @@ export function signAndEncode(
       return Promise.resolve(
         keyPromise
           .then((key) => self.crypto.subtle.sign(signAlgorithm, key, encoded))
-          .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode(...new Uint8Array(sig)))}`)
+          .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode.apply(String, Array.from(new Uint8Array(sig))))}`)
       ).catch((_error) => {
         return null;
       });

@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import powerbi from 'powerbi-visuals-api';
+import type powerbi from 'powerbi-visuals-api';
 
 function isValidDate(decoded: string) {
   if (!/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/gm.test(decoded)) {
@@ -23,12 +23,12 @@ export default class LicenseSettings {
   info = '';
   contact = '';
 
-  readonly #decoder: (code: string) => Promise<string | null>;
-  readonly #url: string;
+  readonly _decoder: (code: string) => Promise<string | null>;
+  readonly _url: string;
 
   constructor(decoder: (code: string) => Promise<string | null>, url: string) {
-    this.#decoder = decoder;
-    this.#url = url;
+    this._decoder = decoder;
+    this._url = url;
     this.contact = url;
   }
 
@@ -82,12 +82,12 @@ export default class LicenseSettings {
     host: powerbi.extensibility.visual.IVisualHost,
     usesProFeatures: () => boolean
   ) {
-    return this.#decoder(this.code).then((decoded) => {
+    return this._decoder(this.code).then((decoded) => {
       const state = this.deriveLicenseState(decoded, host);
       if (state === 'valid' || !usesProFeatures()) {
         this.resetWatermark(target);
       } else {
-        applyWatermark(target, this.#url);
+        applyWatermark(target, this._url);
       }
     });
   }

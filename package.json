@@ -1,7 +1,7 @@
 {
   "name": "@upsetjs/powerbi_venn_visuals",
   "description": "UpSet.js is a re-implementation of UpSetR to create interactive set visualizations for more than three sets",
-  "version": "1.9.1",
+  "version": "1.10.10",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "Samuel Gratzl",
@@ -20,8 +20,8 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "test": "echo no tests",
-    "build:preview": "npx shx mv pbiviz.json pbiviz.bak.json && npx shx cp pbiviz_preview.json pbiviz.json && pbiviz package && npx shx mv dist/upSetJSVenn* dist/upsetjs_venn_preview.pbiviz && npx shx rm pbiviz.json && npx shx mv pbiviz.bak.json pbiviz.json",
-    "build": "npx shx rm -rf dist && npm run build:preview && pbiviz package && npx shx cp dist/upSetJSVenn* dist/upsetjs_venn.pbiviz",
+    "build:preview": "shx mv pbiviz.json pbiviz.bak.json && shx cp pbiviz_preview.json pbiviz.json && pbiviz package && shx mv dist/upSetJSVenn* dist/upsetjs_venn_preview.pbiviz && shx rm pbiviz.json && shx mv pbiviz.bak.json pbiviz.json",
+    "build": "shx rm -rf dist && npm run build:preview && pbiviz package && shx cp dist/upSetJSVenn* dist/upsetjs_venn.pbiviz",
     "lint": "npm run eslint && npm run prettier",
     "fix": "npm run eslint:fix && npm run prettier:write",
     "prettier:impl": "prettier \"*.{md,json,yml}\" .eslintrc.js .prettierrc.js \"{src,scripts,.github}/**\"",
@@ -34,27 +34,29 @@
     "package": "npm run build"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.14.0",
-    "@upsetjs/bundle": "~1.9.1",
-    "@upsetjs/venn.js": "^1.4.1",
-    "core-js": "^3.12.1",
-    "powerbi-visuals-api": "^3.5.1",
+    "@babel/runtime-corejs3": "^7.16.5",
+    "@upsetjs/bundle": "~1.10.10",
+    "@upsetjs/venn.js": "^1.4.2",
+    "core-js": "^3.20.1",
+    "powerbi-visuals-api": "^4.0.0",
     "powerbi-visuals-utils-dataviewutils": "^2.4.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.24.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^4.24.0",
-    "@typescript-eslint/parser": "^4.24.0",
-    "eslint": "^7.27.0",
+    "@types/d3-selection": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/eslint-plugin-tslint": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "eslint": "^8.5.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "powerbi-visuals-tools": "^3.1.19",
-    "powerbi-visuals-webpack-plugin": "2.2.6",
-    "prettier": "^2.3.0",
-    "release-it": "^14.6.2",
-    "ts-loader": "^8.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "powerbi-visuals-tools": "^4.0.2",
+    "powerbi-visuals-webpack-plugin": "3.0.0",
+    "prettier": "^2.5.1",
+    "release-it": "^14.11.8",
+    "shx": "^0.3.3",
+    "ts-loader": "^9.2.6",
     "tslint": "^6.1.3",
     "tslint-microsoft-contrib": "^6.2.0",
-    "typescript": "^4.2.4"
+    "typescript": "^4.5.4"
   }
 }

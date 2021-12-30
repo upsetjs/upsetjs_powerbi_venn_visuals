@@ -7,4 +7,5 @@ node_modules
 /build
 /webpack.statistics*
 /keys
-/src/secrets.json
+/src/secrets.ts
+*.bak.json

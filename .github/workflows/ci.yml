@@ -7,25 +7,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2.1.4
+      - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
       - name: Cache Node.js modules
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2
         with:
           path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-node2-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-node2-
             ${{ runner.OS }}-
       - name: copy example secret
-        run: cp src/secrets.example.json src/secrets.json
+        run: cp src/secrets.example.ts src/secrets.ts
       - name: create secrets from action secret
         env:
           LICENSE_INFO: ${{ secrets.LICENSE_KEY }}
         if: env.LICENSE_INFO != null
         run: |
-          echo '${{ env.LICENSE_INFO }}' > src/secrets.json
+          echo '${{ env.LICENSE_INFO }}' > src/secrets.ts
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
@@ -35,6 +35,7 @@ jobs:
           cp dist/upsetjs_venn.pbiviz public/integrations/powerbi/
           cp dist/upsetjs_venn_preview.pbiviz public/integrations/powerbi/
           cp samples/got.pbix public/integrations/powerbi/got_venn.pbix
+          cp samples/sample.pbix public/integrations/powerbi/sample_venn.pbix
 
       - name: Deploy Main
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

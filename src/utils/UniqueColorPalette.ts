@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import powerbi from 'powerbi-visuals-api';
+import type powerbi from 'powerbi-visuals-api';
 
 export class UniqueColorPalette {
   private readonly map = new Map<string, powerbi.IColorInfo>();

@@ -8,7 +8,7 @@ This package is part of the UpSet.js ecosystem located at the main [Github Monor
 
 ![Venn Report](https://user-images.githubusercontent.com/4129778/85765896-d6417900-b716-11ea-8b89-8ae01f6456a0.png)
 
-see also [Sample PBIX file](https://upset.js.org/integrations/powerbi/got_venn.pbix)
+see also [Sample GoT PBIX file](https://upset.js.org/integrations/powerbi/got_venn.pbix) or [Sample PBIX file](https://upset.js.org/integrations/powerbi/sample_venn.pbix)
 
 ## Installation
 
@@ -71,11 +71,12 @@ UpSet.js is a client only library. The library or any of its integrations doesn'
 
 ### Commercial license
 
-If you want to use Upset.js for a commercial application the commercial license is the appropriate license. Contact [@sgratzl](mailto:sam@sgratzl.com) for details.
+If you want to use UpSet.js for a commercial application or in a commercial environment, the commercial license is the appropriate license. Contact [@sgratzl](mailto:sam@sgratzl.com) for details.
 
 ### Open-source license
 
-This library is released under the `GNU AGPLv3` version to be used for private and academic purposes. In case of a commercial use, please get in touch regarding a commercial license.
+This library is released under the `GNU AGPLv3` version to be used for private and academic purposes.
+In case of a commercial use, please get in touch regarding a commercial license.
 
 [github-actions-image]: https://github.com/upsetjs/upsetjs_powerbi_venn_visuals/workflows/ci/badge.svg
 [github-actions-url]: https://github.com/upsetjs/upsetjs_powerbi_venn_visuals/actions
