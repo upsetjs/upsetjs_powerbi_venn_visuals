@@ -34,6 +34,9 @@
       "conditions": [
         {
           "elements": { "max": 1 }
+        },
+        {
+          "counts": { "max": 1 }
         }
       ],
       "categorical": {
@@ -46,7 +49,7 @@
           }
         },
         "values": {
-          "select": [{ "bind": { "to": "sets" } }]
+          "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "counts" } }]
         }
       }
     }
@@ -59,10 +62,12 @@
       "properties": {
         "code": {
           "displayName": "Code",
+          "description": "license Code",
           "type": { "text": true }
         },
         "info": {
           "displayName": "Info",
+          "description": "will print whether the license could be verified",
           "type": { "text": true }
         },
         "contact": {
@@ -86,6 +91,10 @@
               {
                 "displayName": "Individual Colors",
                 "value": "powerbi"
+              },
+              {
+                "displayName": "Colored Sets",
+                "value": "powerbi-set"
               },
               {
                 "displayName": "Single Color",
@@ -226,6 +235,7 @@
   "supportsLandingPage": true,
   "supportsEmptyDataView": true,
   "tooltips": {
+    "supportEnhancedTooltips": true,
     "supportedTypes": {
       "default": true,
       "canvas": true

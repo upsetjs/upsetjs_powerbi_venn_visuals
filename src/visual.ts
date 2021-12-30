@@ -5,18 +5,18 @@
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
+import { renderVennDiagram, renderVennDiagramSkeleton, VennDiagramProps, createVennJSAdapter } from '@upsetjs/bundle';
+import type powerbi from 'powerbi-visuals-api';
 import {
-  renderVennDiagram,
-  renderVennDiagramSkeleton,
-  VennDiagramProps,
-  generateCombinations,
-  createVennJSAdapter,
-} from '@upsetjs/bundle';
-import powerbi from 'powerbi-visuals-api';
-import { extractElems, resolveSelection, extractSets, resolveElementsFromSelection } from './utils/model';
+  extractElems,
+  resolveSelection,
+  resolveElementsFromSelection,
+  createColorResolver,
+  extractSetsAndCombinations,
+} from './utils/model';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
-import { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
+import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
 import { mergeColors } from '@upsetjs/bundle';
 import { layout } from '@upsetjs/venn.js';
 import { UniqueColorPalette } from './utils/UniqueColorPalette';
@@ -36,7 +36,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly colorPalette: UniqueColorPalette;
 
   private props: VennDiagramProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
-  private elems: IPowerBIElems = [];
+  private rows: IPowerBIElems = [];
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
@@ -62,7 +62,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.render();
     });
     this.selectionManager.registerOnSelectCallback((ids) => {
-      this.props.selection = resolveElementsFromSelection(ids, this.elems);
+      this.props.selection = resolveElementsFromSelection(ids, this.rows);
       this.render();
     });
   }
@@ -116,42 +116,30 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     const areDummyValues = dataView.categorical!.categories.length === 0;
 
     // handle window
-    this.elems = extractElems(dataView.categorical!, this.host);
+    this.rows = extractElems(dataView.categorical!, this.host);
 
-    const sets =
-      this.elems.length === 0
-        ? []
-        : extractSets(
-            this.elems,
-            dataView.categorical!,
-            this.colorPalette,
-            this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
-          );
-
-    if (sets.length === 0 || !dataView.categorical!.values) {
+    if (!dataView.categorical!.values) {
       this.colorPalette.clear();
       return false;
     }
 
-    this.verifyLicense();
-
-    if (dataView.metadata.segment) {
+    const hasMore = Boolean(dataView.metadata.segment);
+    if (hasMore) {
       // load more chunks
       requestAnimationFrame(() => this.host.fetchMoreData());
     }
 
-    const combinations = generateCombinations(sets, {
-      type: 'distinctIntersection',
-      min: 1,
-      empty: true,
-      mergeColors,
-    });
-    if (combinations.length === 0) {
+    const { sets, combinations } = this.generateSetsAndCombinations(dataView);
+
+    this.verifyLicense(sets.length);
+
+    if (sets.length === 0 || combinations.length === 0) {
+      this.colorPalette.clear();
       return false;
     }
 
     const selection = resolveSelection(
-      this.elems,
+      this.rows,
       sets,
       combinations,
       dataView.categorical!,
@@ -185,10 +173,28 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     return true;
   }
 
-  private verifyLicense() {
-    this.settings.license.updateLicenseState(this.target, this.host, () =>
-      usesProFeatures(this.props.sets.length, this.settings)
+  private generateSetsAndCombinations(dataView: powerbi.DataView) {
+    const { rows, settings } = this;
+
+    if (rows.length === 0) {
+      return { sets: [], combinations: [] };
+    }
+
+    const colorResolver = createColorResolver(
+      this.colorPalette,
+      settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
     );
+
+    return extractSetsAndCombinations(rows, dataView.categorical!, colorResolver, {
+      type: 'distinctIntersection',
+      min: 1,
+      empty: true,
+      mergeColors,
+    });
+  }
+
+  private verifyLicense(numSets: number) {
+    this.settings.license.updateLicenseState(this.target, this.host, () => usesProFeatures(numSets, this.settings));
   }
 
   /**

@@ -12,8 +12,8 @@ import {
   UpSetAddonHandlerInfos,
   isSetCombination,
 } from '@upsetjs/bundle';
-import powerbi from 'powerbi-visuals-api';
-import { IPowerBIElem } from './interfaces';
+import type powerbi from 'powerbi-visuals-api';
+import type { IPowerBIElem } from './interfaces';
 
 export function createContextMenuHandler(selectionManager: powerbi.extensibility.ISelectionManager) {
   return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {

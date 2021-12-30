@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import powerbi from 'powerbi-visuals-api';
+import type powerbi from 'powerbi-visuals-api';
 
 function isValidDate(decoded: string) {
   if (!/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/gm.test(decoded)) {

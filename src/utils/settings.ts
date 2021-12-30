@@ -5,16 +5,17 @@
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import powerbi from 'powerbi-visuals-api';
+import type powerbi from 'powerbi-visuals-api';
 import { fillDefaults, ISets, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
-import { IPowerBISet, IPowerBISets, IPowerBIElem, IPowerBIElems } from './interfaces';
-import { UniqueColorPalette } from './UniqueColorPalette';
+import type { IPowerBISet, IPowerBISets, IPowerBIElem } from './interfaces';
+import type { UniqueColorPalette } from './UniqueColorPalette';
 
 export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 
 export class UpSetBaseThemeSettings {
   static readonly SET_COLORS_OBJECT_NAME = 'setColors';
   static readonly POWERBI_THEME = 'powerbi';
+  static readonly POWERBI_SET_COLORS_THEME = 'powerbi-set';
   static readonly POWERBI_AUTO_THEME = 'auto';
 
   theme = 'light';
@@ -30,7 +31,7 @@ export class UpSetBaseThemeSettings {
       (d) => typeof this[d] === 'string' || typeof this[d] === 'number'
     );
     const r: any = {};
-    if (this.theme === UpSetBaseThemeSettings.POWERBI_THEME) {
+    if (this.supportIndividualColors()) {
       Object.assign(r, generatePowerBITheme(colorPalette));
     } else if (this.theme === UpSetBaseThemeSettings.POWERBI_AUTO_THEME) {
       Object.assign(r, generateAutoPowerBITheme(colorPalette, data));
@@ -48,7 +49,14 @@ export class UpSetBaseThemeSettings {
   }
 
   supportIndividualColors() {
-    return this.theme === UpSetBaseThemeSettings.POWERBI_THEME;
+    return (
+      this.theme === UpSetBaseThemeSettings.POWERBI_THEME ||
+      this.theme === UpSetBaseThemeSettings.POWERBI_SET_COLORS_THEME
+    );
+  }
+
+  get deriveCombinationColor() {
+    return this.theme !== UpSetBaseThemeSettings.POWERBI_SET_COLORS_THEME;
   }
 
   enumerateSetColors(sets: ISets<IPowerBIElem>): powerbi.VisualObjectInstanceEnumerationObject {
@@ -135,22 +143,21 @@ function generateAutoPowerBITheme(colorPalette: UniqueColorPalette, data: powerb
 export class UpSetCombinationSettings implements GenerateSetCombinationsOptions {
   show = true;
   displayName = 'Intersections';
-  type: 'intersection' | 'union' = 'intersection';
+  mode: 'intersection' | 'union' | 'distinctIntersection' = 'intersection';
   min = 0;
   max = 6;
   empty = false;
   order = <'cardinality'>'cardinality,name';
   limit = 100;
 
-  generate(elems: IPowerBIElems): GenerateSetCombinationsOptions {
+  generate(): GenerateSetCombinationsOptions<IPowerBIElem> {
     return {
-      type: this.type,
+      type: this.mode,
       min: this.min,
       max: this.max,
       empty: this.empty,
       limit: this.limit,
       order: <'cardinality'>fixOrder(this.order),
-      elems,
     };
   }
 }
