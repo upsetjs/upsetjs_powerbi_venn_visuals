@@ -1,20 +1,4 @@
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "strict": true,
-    "alwaysStrict": true,
-    "strictNullChecks": true,
-    "stripInternal": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
-    "noImplicitAny": true,
-  },
-  "include": [
-    "*.ts",
-    "utils/settings.ts",
-    "utils/model.ts",
-    "utils/handler.ts",
-    "utils/attributes.ts",
-    "internal/LicenseManager.ts"
-  ]
+  "extends": "../tsconfig.eslint.json",
+  "include": ["*.ts", "**/*.ts"]
 }
