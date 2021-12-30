@@ -82,7 +82,7 @@ export function signAndEncode(
       return Promise.resolve(
         keyPromise
           .then((key) => self.crypto.subtle.sign(signAlgorithm, key, encoded))
-          .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode(...new Uint8Array(sig)))}`)
+          .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode.apply(String, Array.from(new Uint8Array(sig))))}`)
       ).catch((_error) => {
         return null;
       });

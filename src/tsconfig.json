@@ -6,7 +6,8 @@
     "strictNullChecks": true,
     "stripInternal": true,
     "strictPropertyInitialization": true,
-    "strictFunctionTypes": true
+    "strictFunctionTypes": true,
+    "noImplicitAny": true,
   },
   "include": [
     "*.ts",
