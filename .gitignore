@@ -8,3 +8,4 @@ node_modules
 /webpack.statistics*
 /keys
 /src/secrets.json
+*.bak.json
