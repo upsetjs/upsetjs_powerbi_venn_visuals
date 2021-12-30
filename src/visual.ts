@@ -102,7 +102,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     // reset watermark
     this.settings.license.resetWatermark(this.target);
 
-    if (options.dataViews.length === 0) {
+    if (!options.dataViews || options.dataViews.length === 0) {
       this.colorPalette.clear();
       return false;
     }
