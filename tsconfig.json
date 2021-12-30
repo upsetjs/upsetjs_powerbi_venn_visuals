@@ -16,7 +16,7 @@
       "*": ["src/*", "node_modules/*"]
     },
     "module": "esnext",
-    "importHelpers": true,
+    "importHelpers": false,
     "importsNotUsedAsValues": "remove",
     "forceConsistentCasingInFileNames": true,
     "strictBindCallApply": true,

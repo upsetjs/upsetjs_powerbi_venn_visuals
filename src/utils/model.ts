@@ -95,7 +95,7 @@ export function extractElems(
     }));
   }
   const cat = data.categories[0]!;
-  if (!host.allowInteractions) {
+  if (!host.hostCapabilities.allowInteractions) {
     return cat.values.map((v, i) => ({
       v,
       i,

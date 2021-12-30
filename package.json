@@ -42,6 +42,7 @@
     "powerbi-visuals-utils-dataviewutils": "^2.4.1"
   },
   "devDependencies": {
+    "@types/d3-selection": "^3.0.2",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/eslint-plugin-tslint": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
