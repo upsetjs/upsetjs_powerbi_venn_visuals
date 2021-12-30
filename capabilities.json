@@ -27,6 +27,20 @@
           "integer": true
         }
       ]
+    },
+    {
+      "name": "counts",
+      "displayName": "Cardinality Expression Measure",
+      "description": "numerical measure defining the number of elements in the set, see also expression input",
+      "kind": "Measure",
+      "preferredTypes": [
+        {
+          "numeric": true
+        },
+        {
+          "integer": true
+        }
+      ]
     }
   ],
   "dataViewMappings": [

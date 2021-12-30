@@ -8,7 +8,7 @@ This package is part of the UpSet.js ecosystem located at the main [Github Monor
 
 ![Venn Report](https://user-images.githubusercontent.com/4129778/85765896-d6417900-b716-11ea-8b89-8ae01f6456a0.png)
 
-see also [Sample PBIX file](https://upset.js.org/integrations/powerbi/got_venn.pbix)
+see also [Sample GoT PBIX file](https://upset.js.org/integrations/powerbi/got_venn.pbix) or [Sample PBIX file](https://upset.js.org/integrations/powerbi/sample_venn.pbix)
 
 ## Installation
 
