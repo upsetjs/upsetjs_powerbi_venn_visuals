@@ -1,4 +1,4 @@
-export default {
+const secrets = {
   key: 'SECRET KEY',
   ecdsa: {
     public: {
@@ -11,3 +11,4 @@ export default {
     },
   },
 };
+export default secrets;
