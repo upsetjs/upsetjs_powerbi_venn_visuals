@@ -4,7 +4,7 @@
     "displayName": "Ultimate Venn Diagram (Preview)",
     "guid": "upSetJSVenn61F43BDFCA024B13B6AC5BA73C9427B2_preview",
     "visualClassName": "Visual",
-    "version": "1.10.10",
+    "version": "1.10.11",
     "icon": "assets/icon_preview.png",
     "description": "Venn diagrams allow one to show set intersections up to three sets",
     "supportUrl": "https://www.sgratzl.com",
