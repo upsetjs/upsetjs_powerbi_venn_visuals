@@ -30,6 +30,7 @@ jobs:
       - run: npm run build --if-present
       - run: npm test
       - run: npm run lint
+      - run: npm run alint
       - run: |
           mkdir -p public/integrations/powerbi
           cp dist/upsetjs_venn.pbiviz public/integrations/powerbi/
