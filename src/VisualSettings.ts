@@ -15,7 +15,7 @@ import secrets from './secrets';
 const decoder = compositeDecoder([base64Decoder(secrets.key), decodeAndVerifyECDSASignature(secrets.ecdsa.public)]);
 
 export default class VisualSettings extends dataViewObjectsParser.DataViewObjectsParser {
-  readonly license = new LicenseSettings(decoder, 'https://dataviz.boutique');
+  readonly license = new LicenseSettings(decoder, 'https://www.sgratzl.com');
   readonly theme = new UpSetThemeSettings();
   readonly fonts = new UpSetFontSizeSettings();
   readonly style = new UpSetStyleSettings();

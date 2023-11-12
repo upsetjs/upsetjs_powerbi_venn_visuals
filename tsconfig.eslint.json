@@ -3,6 +3,7 @@
   "compilerOptions": {
     "allowJs": true,
     "strict": true,
+    "noEmit": true,
     "alwaysStrict": true,
     "strictNullChecks": true,
     "stripInternal": true,
@@ -11,5 +12,5 @@
     "noImplicitAny": true,
     "importsNotUsedAsValues": "error"
   },
-  "include": ["**/*.ts", "**/*.js"]
+  "include": ["src/**/*.ts", "*.js", "*.cjs"]
 }

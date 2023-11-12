@@ -1,1 +1,9 @@
 src/secrets.ts
+*.png
+*.svg
+*.pbix
+.editorconfig
+.eslintignore
+.prettierignore
+.gitattributes
+.gitignore
