@@ -62,7 +62,10 @@ export function createSelectionHandler(
   };
 }
 
-function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility.VisualTooltipDataItem[] {
+function renderAddon(
+  addon: UpSetAddonHandlerInfo | null,
+  localizationManager: powerbi.extensibility.ILocalizationManager
+): powerbi.extensibility.VisualTooltipDataItem[] {
   if (!addon) {
     return [];
   }
@@ -71,7 +74,7 @@ function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility
     const bins = <ICategoryBins>Object.keys(addon.value)
       .filter((v) => v !== 'toString')
       .map((k) => (<any>addon.value)[k]);
-    return [{ displayName: 'Attribute', value: addon.name }].concat(
+    return [{ displayName: localizationManager.getDisplayName('Addon_Attribute'), value: addon.name }].concat(
       bins.map((bin) => ({
         displayName: bin.label,
         color: bin.color,
@@ -81,9 +84,15 @@ function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility
   }
   if (addon.id === 'boxplot') {
     const b = <IBoxPlot>addon.value;
-    const labels = ['Minimum', '25% Quantile', 'Median', '75% Quantile', 'Maximum'];
+    const labels = [
+      localizationManager.getDisplayName('Addon_Minimum'),
+      localizationManager.getDisplayName('Addon_25q'),
+      localizationManager.getDisplayName('Addon_Median'),
+      localizationManager.getDisplayName('Addon_75q'),
+      localizationManager.getDisplayName('Addon_Maximum'),
+    ];
     const values = [b.min, b.q1, b.median, b.q3, b.max];
-    return [{ displayName: 'Attribute', value: addon.name }].concat(
+    return [{ displayName: localizationManager.getDisplayName('Addon_Attribute'), value: addon.name }].concat(
       labels.map((l, i) => ({ displayName: l, value: values[i].toFixed(2) }))
     );
   }
@@ -100,7 +109,8 @@ export declare type OnHandler = (
 
 export function createTooltipHandler(
   target: HTMLElement,
-  host: powerbi.extensibility.visual.IVisualHost
+  host: powerbi.extensibility.visual.IVisualHost,
+  localizationManager: powerbi.extensibility.ILocalizationManager
 ): [OnHandler | undefined, OnHandler | undefined] {
   if (!host.tooltipService.enabled()) {
     return [undefined, undefined];
@@ -117,13 +127,15 @@ export function createTooltipHandler(
       dataItems: [
         {
           header: selection.name,
-          displayName: 'Size',
+          displayName: localizationManager.getDisplayName('Tooltip_Size'),
           value: selection.cardinality.toLocaleString(),
         },
         ...(isSetCombination(selection) && selection.degree > 1
           ? Array.from(selection.sets).map((s) => ({ displayName: s.name, value: s.cardinality.toLocaleString() }))
           : []),
-        ...(<powerbi.extensibility.VisualTooltipDataItem[]>[]).concat(...addons.map(renderAddon)),
+        ...(<powerbi.extensibility.VisualTooltipDataItem[]>[]).concat(
+          ...addons.map((a) => renderAddon(a, localizationManager))
+        ),
       ],
       identities: [sel],
     };

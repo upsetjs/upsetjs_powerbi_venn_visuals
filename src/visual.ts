@@ -23,11 +23,12 @@ import { UniqueColorPalette } from './utils/UniqueColorPalette';
 
 const adapter = createVennJSAdapter(layout);
 
-export class Visual implements powerbi.extensibility.visual.IVisual {
+export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
   private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
   private readonly selectionManager: powerbi.extensibility.ISelectionManager;
   private readonly host: powerbi.extensibility.visual.IVisualHost;
+  private readonly localizationManager: powerbi.extensibility.ILocalizationManager;
 
   private readonly onContextMenu: OnHandler;
   private readonly setSelection: OnHandler;
@@ -40,12 +41,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
+    this.localizationManager = options.host.createLocalizationManager();
     this.selectionManager = options.host.createSelectionManager();
     this.colorPalette = new UniqueColorPalette(options.host.colorPalette);
     this.host = options.host;
     this.renderPlaceholder();
 
-    [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host);
+    [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host, this.localizationManager);
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
     this.target.addEventListener('contextmenu', (e) => {
       e.preventDefault();
@@ -66,6 +68,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.render();
     });
   }
+  // TODO
+  // destroy?(): void {
+  //   throw new Error('Method not implemented.');
+  // }
+  // getFormattingModel?(): powerbi.visuals.FormattingModel {
+  //   throw new Error('Method not implemented.');
+  // }
 
   private render() {
     if (this.settings.style.mode !== 'venn' || this.props.sets.length > 5) {
@@ -194,7 +203,12 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private verifyLicense(numSets: number) {
-    this.settings.license.updateLicenseState(this.target, this.host, () => usesProFeatures(numSets, this.settings));
+    this.settings.license.updateLicenseState(
+      this.target,
+      this.host,
+      () => usesProFeatures(numSets, this.settings),
+      this.localizationManager
+    );
   }
 
   /**

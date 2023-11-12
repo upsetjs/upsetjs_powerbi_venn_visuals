@@ -69,6 +69,7 @@
     }
   ],
   "suppressDefaultTitle": true,
+  "supportsMultiVisualSelection": true,
   "privileges": [],
   "objects": {
     "license": {
@@ -249,6 +250,7 @@
   "supportsHighlight": true,
   "supportsLandingPage": true,
   "supportsEmptyDataView": true,
+  "supportsSynchronizingFilterState": true,
   "tooltips": {
     "supportEnhancedTooltips": true,
     "supportedTypes": {

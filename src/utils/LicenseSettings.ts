@@ -51,39 +51,44 @@ export default class LicenseSettings {
 
   private deriveLicenseState(
     decoded: string | null,
-    host: powerbi.extensibility.visual.IVisualHost
+    host: powerbi.extensibility.visual.IVisualHost,
+    localizationManager: powerbi.extensibility.ILocalizationManager
   ): 'no-license' | 'invalid' | 'valid' | 'expired' {
     if (!decoded || decoded.trim().length === 0) {
       this.updateInfo(host, '');
       return 'no-license';
     }
     if (!decoded.includes(':')) {
-      this.updateInfo(host, 'invalid license code');
+      this.updateInfo(host, localizationManager.getDisplayName('License_Invalid'));
       return 'invalid';
     }
     const [dateString, customer] = decoded.split(':');
     const expirationDate = isValidDate(dateString);
     if (!expirationDate) {
-      this.updateInfo(host, 'invalid license code');
+      this.updateInfo(host, localizationManager.getDisplayName('License_Invalid'));
       return 'invalid';
     }
     const today = new Date();
     if (today <= expirationDate) {
       const date = expirationDate.toDateString();
-      this.updateInfo(host, `${customer} (valid until ${date})`);
+      this.updateInfo(
+        host,
+        `${customer} ${localizationManager.getDisplayName('License_Valid_Until').replace('DATE', date)})`
+      );
       return 'valid';
     }
-    this.updateInfo(host, `${customer} (license expired)`);
+    this.updateInfo(host, `${customer} ${localizationManager.getDisplayName('License_Expired')}`);
     return 'expired';
   }
 
   updateLicenseState(
     target: HTMLElement,
     host: powerbi.extensibility.visual.IVisualHost,
-    usesProFeatures: () => boolean
+    usesProFeatures: () => boolean,
+    localizationManager: powerbi.extensibility.ILocalizationManager
   ) {
     return this._decoder(this.code).then((decoded) => {
-      const state = this.deriveLicenseState(decoded, host);
+      const state = this.deriveLicenseState(decoded, host, localizationManager);
       if (state === 'valid' || !usesProFeatures()) {
         this.resetWatermark(target);
       } else {

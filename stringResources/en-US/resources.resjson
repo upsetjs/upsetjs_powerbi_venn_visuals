@@ -1,0 +1,12 @@
+{
+  "Addon_Attribute": "Attribute",
+  "Addon_Minimum": "Minimum",
+  "Addon_25q": "25% Quantile",
+  "Addon_Median": "Median",
+  "Addon_75q": "75% Quantile",
+  "Addon_Maximum": "Maximum",
+  "Tooltip_Size": "Size",
+  "License_Invalid": "invalid license code",
+  "License_Expired": "(license expired)",
+  "License_Valid_Until": "(valid until DATE)"
+}
