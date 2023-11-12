@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
  */
 
 export function generateKeyPair(algorithm: RsaHashedKeyGenParams | EcKeyGenParams) {
@@ -42,7 +42,7 @@ export function decodeAndVerifySignature(
         keyPromise
           .then((key) => self.crypto.subtle.verify(verifyAlgorithm, key, sig, encoded))
           .then((verified) => (verified ? payload : null))
-      ).catch((_error) => {
+      ).catch(() => {
         return null;
       });
     } catch {
@@ -82,8 +82,8 @@ export function signAndEncode(
       return Promise.resolve(
         keyPromise
           .then((key) => self.crypto.subtle.sign(signAlgorithm, key, encoded))
-          .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode.apply(String, Array.from(new Uint8Array(sig))))}`)
-      ).catch((_error) => {
+          .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode(...new Uint8Array(sig)))}`)
+      ).catch(() => {
         return null;
       });
     } catch {

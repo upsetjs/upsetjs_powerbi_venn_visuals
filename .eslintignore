@@ -1,0 +1,8 @@
+node_modules
+dist
+*.pbix
+.prettierignore
+package-lock.json
+webpack*.html
+.tmp
+scripts

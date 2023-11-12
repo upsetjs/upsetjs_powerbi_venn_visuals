@@ -9,3 +9,4 @@ node_modules
 /keys
 /src/secrets.ts
 *.bak.json
+.eslintcache

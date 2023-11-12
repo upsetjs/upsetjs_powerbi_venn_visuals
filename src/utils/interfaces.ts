@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
  */
 import type { ISet, ISetCombination, ISetLike } from '@upsetjs/bundle';
 import type powerbi from 'powerbi-visuals-api';

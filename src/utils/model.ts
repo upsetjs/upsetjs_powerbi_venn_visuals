@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
  */
 import {
   asSets,
@@ -214,10 +214,13 @@ function extractExpressionInput(
         Object.assign(s, {
           elems: combinations
             .filter((d) => d.sets.has(s))
-            .reduce((acc, d) => {
-              acc.push(...(<IPowerBIElem[]>d.elems));
-              return acc;
-            }, <IPowerBIElem[]>[]),
+            .reduce(
+              (acc, d) => {
+                acc.push(...(<IPowerBIElem[]>d.elems));
+                return acc;
+              },
+              <IPowerBIElem[]>[]
+            ),
         });
       }
       return <IPowerBISet>s;
