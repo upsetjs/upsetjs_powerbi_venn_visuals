@@ -69,6 +69,7 @@
     }
   ],
   "suppressDefaultTitle": true,
+  "privileges": [],
   "objects": {
     "license": {
       "displayName": "License",
