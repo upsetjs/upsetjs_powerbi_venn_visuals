@@ -12,5 +12,5 @@
     "noImplicitAny": true,
     "importsNotUsedAsValues": "error"
   },
-  "include": ["src/**/*.ts", "*.js", "*.cjs"]
+  "include": ["src/**/*.ts", "*.js", "*.cjs", "*.mjs"]
 }

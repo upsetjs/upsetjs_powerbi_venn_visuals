@@ -11,5 +11,12 @@ export default defineConfig(
   tseslint.configs.recommended,
   powerbi.configs.recommended,
   prettier,
-
+  {
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.eslint.json",
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
 );

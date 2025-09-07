@@ -26,7 +26,7 @@ import {
   createSelectionHandler,
 } from "./utils/handler";
 import VisualSettings, { UpSetThemeSettings } from "./VisualSettings";
-import type { IPowerBIElem, IPowerBIElems } from "./utils/interfaces";
+import type { IPowerBIElems } from "./utils/interfaces";
 import { mergeColors } from "@upsetjs/bundle";
 import { layout } from "@upsetjs/venn.js";
 import { UniqueColorPalette } from "./utils/UniqueColorPalette";

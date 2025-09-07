@@ -37,7 +37,7 @@ export class UpSetBaseThemeSettings {
     const keys = (<(keyof UpSetBaseThemeSettings)[]>Object.keys(this)).filter(
       (d) => typeof this[d] === "string" || typeof this[d] === "number",
     );
-    const r: any = {};
+    const r: { theme?: string } = {};
     if (this.supportIndividualColors()) {
       Object.assign(r, generatePowerBITheme(colorPalette));
     } else if (this.theme === UpSetBaseThemeSettings.POWERBI_AUTO_THEME) {
@@ -46,7 +46,7 @@ export class UpSetBaseThemeSettings {
       r.theme = this.theme;
     }
     keys.forEach((key) => {
-      const defaultValue = (<any>defaults)[key];
+      const defaultValue = (defaults as unknown)[key];
       const current = this[key];
       if (current !== defaultValue) {
         r[key] = current;

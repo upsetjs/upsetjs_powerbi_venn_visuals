@@ -75,7 +75,7 @@ function renderAddon(
     // should be fixed in 1.4.1
     const bins = <ICategoryBins>Object.keys(addon.value)
       .filter((v) => v !== "toString")
-      .map((k) => (<any>addon.value)[k]);
+      .map((k) => (addon.value as unknown)[k]);
     return [
       {
         displayName: localizationManager.getDisplayName("Addon_Attribute"),
