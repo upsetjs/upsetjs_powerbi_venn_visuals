@@ -11,4 +11,5 @@ export default defineConfig(
   tseslint.configs.recommended,
   powerbi.configs.recommended,
   prettier,
+
 );

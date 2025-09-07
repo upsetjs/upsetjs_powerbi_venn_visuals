@@ -1,7 +1,7 @@
 {
   "name": "@upsetjs/powerbi_venn_visuals",
   "description": "UpSet.js is a re-implementation of UpSetR to create interactive set visualizations for more than three sets",
-  "version": "1.10.12",
+  "version": "2.0.0",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "Samuel Gratzl",
@@ -38,7 +38,7 @@
     "@upsetjs/bundle": "~1.11.0",
     "@upsetjs/venn.js": "^2.0.0",
     "core-js": "^3.45.1",
-    "powerbi-visuals-api": "~5.11.0",
+    "powerbi-visuals-api": "~5.4.0",
     "powerbi-visuals-utils-dataviewutils": "^6.1.0"
   },
   "devDependencies": {
