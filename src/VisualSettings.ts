@@ -5,7 +5,6 @@
  * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import LicenseSettings from './utils/LicenseSettings';
 import { compositeDecoder, decodeAndVerifyECDSASignature } from './utils/crypto';
 import base64Decoder from './internal/base64Decoder';

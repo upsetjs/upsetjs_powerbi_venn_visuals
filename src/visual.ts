@@ -224,6 +224,12 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
     }
     return VisualSettings.enumerateObjectInstances(this.settings, options);
   }
+
+  getFormattingModel(): powerbi.visuals.FormattingModel {
+    return {
+      cards: [{}],
+    };
+  }
 }
 
 function usesProFeatures(numSets: number, settings: VisualSettings) {
