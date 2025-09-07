@@ -108,9 +108,6 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
   }
 
   private renderImpl(options: powerbi.extensibility.visual.VisualUpdateOptions) {
-    // reset watermark
-    this.settings.license.resetWatermark(this.target);
-
     if (!options.dataViews || options.dataViews.length === 0) {
       this.colorPalette.clear();
       return false;
@@ -139,8 +136,6 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
     }
 
     const { sets, combinations } = this.generateSetsAndCombinations(dataView);
-
-    this.verifyLicense(sets.length);
 
     if (sets.length === 0 || combinations.length === 0) {
       this.colorPalette.clear();
@@ -202,15 +197,6 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
     });
   }
 
-  private verifyLicense(numSets: number) {
-    this.settings.license.updateLicenseState(
-      this.target,
-      this.host,
-      () => usesProFeatures(numSets, this.settings),
-      this.localizationManager
-    );
-  }
-
   /**
    * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the
    * objects and properties you want to expose to the users in the property pane.
@@ -230,16 +216,4 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
       cards: [{}],
     };
   }
-}
-
-function usesProFeatures(numSets: number, settings: VisualSettings) {
-  const theme = settings.theme;
-  if (theme.theme !== 'light') {
-    return true;
-  }
-  if (numSets > 3 || settings.style.mode !== 'venn') {
-    return true;
-  }
-
-  return false;
 }
