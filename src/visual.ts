@@ -23,9 +23,11 @@ import { UniqueColorPalette } from './utils/UniqueColorPalette';
 
 const adapter = createVennJSAdapter(layout);
 
-export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual {
+export class VennDiagram implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
-  private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
+  private settings: VisualSettings = <VisualSettings>(
+    VisualSettings.getDefault()
+  );
   private readonly selectionManager: powerbi.extensibility.ISelectionManager;
   private readonly host: powerbi.extensibility.visual.IVisualHost;
   private readonly localizationManager: powerbi.extensibility.ILocalizationManager;
@@ -36,7 +38,7 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
   private readonly onMouseMove: undefined | OnHandler;
   private readonly colorPalette: UniqueColorPalette;
 
-  private props: VennDiagramProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
+  private props: VennDiagramProps = { sets: [], width: 100, height: 100 };
   private rows: IPowerBIElems = [];
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
@@ -47,16 +49,20 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
     this.host = options.host;
     this.renderPlaceholder();
 
-    [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host, this.localizationManager);
+    [this.onHover, this.onMouseMove] = createTooltipHandler(
+      this.target,
+      this.host,
+      this.localizationManager,
+    );
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
-    this.target.addEventListener('contextmenu', (e) => {
+    this.target.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       this.selectionManager.showContextMenu(
         {},
         {
           x: e.clientX,
           y: e.clientY,
-        }
+        },
       );
     });
     this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
@@ -77,7 +83,7 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
   // }
 
   private render() {
-    if (this.settings.style.mode !== 'venn' || this.props.sets.length > 5) {
+    if (this.settings.style.mode !== "venn" || this.props.sets.length > 5) {
       this.props.layout = adapter;
     } else {
       delete this.props.layout;
@@ -99,15 +105,17 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
   }
 
   private renderPlaceholder() {
-    this.target.textContent = '';
-    this.target.style.position = 'relative';
+    this.target.textContent = "";
+    this.target.style.position = "relative";
     renderVennDiagramSkeleton(this.target, {
-      width: '100%',
-      height: '100%',
+      width: "100%",
+      height: "100%",
     });
   }
 
-  private renderImpl(options: powerbi.extensibility.visual.VisualUpdateOptions) {
+  private renderImpl(
+    options: powerbi.extensibility.visual.VisualUpdateOptions,
+  ) {
     if (!options.dataViews || options.dataViews.length === 0) {
       this.colorPalette.clear();
       return false;
@@ -148,7 +156,7 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
       combinations,
       dataView.categorical!,
       this.selectionManager,
-      !areDummyValues && this.host.hostCapabilities.allowInteractions === true
+      !areDummyValues && this.host.hostCapabilities.allowInteractions === true,
     );
 
     this.props = Object.assign(
@@ -162,7 +170,7 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
       },
       this.settings.fonts.generate(),
       this.settings.theme.generate(this.colorPalette, dataView.categorical!),
-      this.settings.style
+      this.settings.style,
     );
 
     if (!areDummyValues && this.host.hostCapabilities.allowInteractions) {
@@ -186,15 +194,22 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
 
     const colorResolver = createColorResolver(
       this.colorPalette,
-      settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+      settings.theme.supportIndividualColors()
+        ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME
+        : undefined,
     );
 
-    return extractSetsAndCombinations(rows, dataView.categorical!, colorResolver, {
-      type: 'distinctIntersection',
-      min: 1,
-      empty: true,
-      mergeColors,
-    });
+    return extractSetsAndCombinations(
+      rows,
+      dataView.categorical!,
+      colorResolver,
+      {
+        type: "distinctIntersection",
+        min: 1,
+        empty: true,
+        mergeColors,
+      },
+    );
   }
 
   /**
@@ -203,8 +218,10 @@ export class UltimateVennDiagram implements powerbi.extensibility.visual.IVisual
    *
    */
   enumerateObjectInstances(
-    options: powerbi.EnumerateVisualObjectInstancesOptions
-  ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
+    options: powerbi.EnumerateVisualObjectInstancesOptions,
+  ):
+    | powerbi.VisualObjectInstance[]
+    | powerbi.VisualObjectInstanceEnumerationObject {
     if (options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME) {
       return this.settings.theme.enumerateSetColors(this.props.sets);
     }
