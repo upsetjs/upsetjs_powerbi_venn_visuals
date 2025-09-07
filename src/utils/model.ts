@@ -10,19 +10,30 @@ import {
   generateCombinations,
   GenerateSetCombinationsOptions,
   ISetCombinations,
-} from '@upsetjs/bundle';
-import type powerbi from 'powerbi-visuals-api';
-import type { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';
-import type { UniqueColorPalette } from './UniqueColorPalette';
+} from "@upsetjs/bundle";
+import type powerbi from "powerbi-visuals-api";
+import type {
+  IPowerBIElem,
+  IPowerBIElems,
+  IPowerBISet,
+  IPowerBISetCombinations,
+  IPowerBISets,
+} from "./interfaces";
+import type { UniqueColorPalette } from "./UniqueColorPalette";
 
-export function isSelection(s: powerbi.extensibility.ISelectionId): s is powerbi.visuals.ISelectionId {
-  return s != null && typeof (<powerbi.visuals.ISelectionId>s).includes === 'function';
+export function isSelection(
+  s: powerbi.extensibility.ISelectionId,
+): s is powerbi.visuals.ISelectionId {
+  return (
+    s != null &&
+    typeof (<powerbi.visuals.ISelectionId>s).includes === "function"
+  );
 }
 
 function findSet(
   selection: IPowerBIElems | undefined,
   sets: IPowerBISets,
-  combinations: ISetCombinations<IPowerBIElem>
+  combinations: ISetCombinations<IPowerBIElem>,
 ) {
   if (!selection || selection.length === 0) {
     return undefined;
@@ -49,8 +60,15 @@ function findSet(
   return selection;
 }
 
-function deriveHighlight(elems: IPowerBIElems, data: powerbi.DataViewCategorical) {
-  if (!data.values || data.values.length === 0 || data.values[0].highlights == null) {
+function deriveHighlight(
+  elems: IPowerBIElems,
+  data: powerbi.DataViewCategorical,
+) {
+  if (
+    !data.values ||
+    data.values.length === 0 ||
+    data.values[0].highlights == null
+  ) {
     return undefined;
   }
   return data.values[0].highlights
@@ -58,12 +76,19 @@ function deriveHighlight(elems: IPowerBIElems, data: powerbi.DataViewCategorical
     .filter((v): v is IPowerBIElem => v !== null);
 }
 
-export function resolveElementsFromSelection(sel: readonly powerbi.extensibility.ISelectionId[], elems: IPowerBIElems) {
+export function resolveElementsFromSelection(
+  sel: readonly powerbi.extensibility.ISelectionId[],
+  elems: IPowerBIElems,
+) {
   if (sel.length === 0) {
     return null;
   }
   // resolve to the elements that are included
-  return elems.filter((elem) => sel.some((s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s))));
+  return elems.filter((elem) =>
+    sel.some(
+      (s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s)),
+    ),
+  );
 }
 
 export function resolveSelection(
@@ -72,7 +97,7 @@ export function resolveSelection(
   combinations: IPowerBISetCombinations,
   data: powerbi.DataViewCategorical,
   selectionManager: powerbi.extensibility.ISelectionManager,
-  interactive: boolean
+  interactive: boolean,
 ) {
   const selection: IPowerBIElems | undefined = deriveHighlight(elems, data);
   if (selection) {
@@ -81,12 +106,15 @@ export function resolveSelection(
   if (!interactive) {
     return null;
   }
-  return resolveElementsFromSelection(selectionManager.getSelectionIds(), elems);
+  return resolveElementsFromSelection(
+    selectionManager.getSelectionIds(),
+    elems,
+  );
 }
 
 export function extractElems(
   data: powerbi.DataViewCategorical,
-  host: powerbi.extensibility.visual.IVisualHost
+  host: powerbi.extensibility.visual.IVisualHost,
 ): IPowerBIElems {
   const attrs = data.values?.filter((d) => d.source?.roles?.attributes) ?? [];
   const countColumn = data.values?.find((d) => d.source?.roles?.counts);
@@ -121,7 +149,10 @@ export function extractElems(
   }));
 }
 
-export function createColorResolver(colorPalette: UniqueColorPalette, setColorObjectName?: string) {
+export function createColorResolver(
+  colorPalette: UniqueColorPalette,
+  setColorObjectName?: string,
+) {
   return (value: powerbi.DataViewValueColumn) => {
     if (!setColorObjectName) {
       return undefined;
@@ -129,22 +160,25 @@ export function createColorResolver(colorPalette: UniqueColorPalette, setColorOb
     // reserve color in any case
     const base = colorPalette.getColor(value.source.queryName!).value;
     if (value.source.objects && value.source.objects[setColorObjectName]) {
-      return (<powerbi.Fill>value.source.objects[setColorObjectName].fill).solid!.color;
+      return (<powerbi.Fill>value.source.objects[setColorObjectName].fill)
+        .solid!.color;
     }
     return base;
   };
 }
 
 function isPartOfSet(v: powerbi.PrimitiveValue) {
-  return !(!v || String(v).toLowerCase().startsWith('f'));
+  return !(!v || String(v).toLowerCase().startsWith("f"));
 }
 
 function extractBaseSets(
   data: powerbi.DataViewCategorical,
-  colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined
+  colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined,
 ) {
   // just the sets
-  const sets = data.values ? data.values.filter((d) => d.source?.roles?.sets) : [];
+  const sets = data.values
+    ? data.values.filter((d) => d.source?.roles?.sets)
+    : [];
   return sets.map((value, i) => {
     return {
       value,
@@ -156,7 +190,10 @@ function extractBaseSets(
   });
 }
 
-function extractSets(elems: IPowerBIElems, baseSets: ReturnType<typeof extractBaseSets>): readonly IPowerBISet[] {
+function extractSets(
+  elems: IPowerBIElems,
+  baseSets: ReturnType<typeof extractBaseSets>,
+): readonly IPowerBISet[] {
   const setObjects = asSets(
     baseSets.map((s) => {
       const setElems = elems.filter((_, i) => isPartOfSet(s.values[i]));
@@ -165,7 +202,7 @@ function extractSets(elems: IPowerBIElems, baseSets: ReturnType<typeof extractBa
         elems: setElems,
         cardinality: setElems.reduce((acc, elem) => acc + elem.count, 0),
       };
-    })
+    }),
   );
 
   return postProcessSets(setObjects);
@@ -181,12 +218,12 @@ function postProcessSets(setObjects: IPowerBISet[]): readonly IPowerBISet[] {
 function extractExpressionInput(
   elems: IPowerBIElems,
   baseSets: ReturnType<typeof extractBaseSets>,
-  genOptions: GenerateSetCombinationsOptions<IPowerBIElem>
+  genOptions: GenerateSetCombinationsOptions<IPowerBIElem>,
 ): {
   sets: IPowerBISets;
   combinations: IPowerBISetCombinations;
 } {
-  const type = genOptions.type ?? 'distinctIntersection';
+  const type = genOptions.type ?? "distinctIntersection";
   const { sets, combinations } = extractFromExpression(
     elems.map((elem, i) => {
       return {
@@ -195,11 +232,12 @@ function extractExpressionInput(
         cardinality: elem.count,
       };
     }),
-    (e) => baseSets.filter((d) => isPartOfSet(d.values[e.index])).map((d) => d.name),
+    (e) =>
+      baseSets.filter((d) => isPartOfSet(d.values[e.index])).map((d) => d.name),
     {
       combinationOrder: genOptions.order,
       type,
-    }
+    },
   );
   const byName = new Map(baseSets.map((s) => [s.name, s]));
   const typedCombinations = <IPowerBISetCombinations>combinations;
@@ -209,7 +247,7 @@ function extractExpressionInput(
       if (base) {
         Object.assign(s, base);
       }
-      if (type === 'distinctIntersection') {
+      if (type === "distinctIntersection") {
         // combine all elements into it
         Object.assign(s, {
           elems: combinations
@@ -219,12 +257,12 @@ function extractExpressionInput(
                 acc.push(...(<IPowerBIElem[]>d.elems));
                 return acc;
               },
-              <IPowerBIElem[]>[]
+              <IPowerBIElem[]>[],
             ),
         });
       }
       return <IPowerBISet>s;
-    })
+    }),
   );
   return { sets: typedSets, combinations: typedCombinations };
 }
@@ -233,13 +271,14 @@ export function extractSetsAndCombinations(
   elems: IPowerBIElems,
   data: powerbi.DataViewCategorical,
   colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined,
-  genOptions: GenerateSetCombinationsOptions<IPowerBIElem>
+  genOptions: GenerateSetCombinationsOptions<IPowerBIElem>,
 ): {
   sets: IPowerBISets;
   combinations: IPowerBISetCombinations;
 } {
   const baseSets = extractBaseSets(data, colorResolver);
-  const hasCountColumn = data.values?.find((d) => d.source?.roles?.counts) != null;
+  const hasCountColumn =
+    data.values?.find((d) => d.source?.roles?.counts) != null;
 
   if (!hasCountColumn) {
     const sets = extractSets(elems, baseSets);

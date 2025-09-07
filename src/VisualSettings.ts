@@ -5,7 +5,10 @@
  * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import { UpSetBaseThemeSettings, UpSetFontSizeSettings } from './utils/settings';
+import {
+  UpSetBaseThemeSettings,
+  UpSetFontSizeSettings,
+} from "./utils/settings";
 
 export default class VisualSettings extends dataViewObjectsParser.DataViewObjectsParser {
   readonly theme = new UpSetThemeSettings();
@@ -16,5 +19,5 @@ export default class VisualSettings extends dataViewObjectsParser.DataViewObject
 export class UpSetThemeSettings extends UpSetBaseThemeSettings {}
 
 export class UpSetStyleSettings {
-  mode: 'venn' | 'euler' = 'venn';
+  mode: "venn" | "euler" = "venn";
 }

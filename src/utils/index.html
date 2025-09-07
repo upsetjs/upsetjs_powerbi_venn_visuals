@@ -100,34 +100,52 @@
         if (!self.crypto || !self.crypto.subtle) {
           return () => Promise.resolve([null, null]);
         }
-        return self.crypto.subtle.generateKey(algorithm, true, ['sign', 'verify']).then((key) => {
-          const pair = key;
-          return Promise.all([
-            self.crypto.subtle.exportKey('jwk', pair.privateKey),
-            self.crypto.subtle.exportKey('jwk', pair.publicKey),
-          ]);
-        });
+        return self.crypto.subtle
+          .generateKey(algorithm, true, ["sign", "verify"])
+          .then((key) => {
+            const pair = key;
+            return Promise.all([
+              self.crypto.subtle.exportKey("jwk", pair.privateKey),
+              self.crypto.subtle.exportKey("jwk", pair.publicKey),
+            ]);
+          });
       }
-      export function decodeAndVerifySignature(key, importAlgorithm, verifyAlgorithm) {
+      export function decodeAndVerifySignature(
+        key,
+        importAlgorithm,
+        verifyAlgorithm,
+      ) {
         if (!self.crypto || !self.crypto.subtle) {
           return () => Promise.resolve(null);
         }
-        const keyPromise = self.crypto.subtle.importKey('jwk', key, importAlgorithm, false, ['verify']);
+        const keyPromise = self.crypto.subtle.importKey(
+          "jwk",
+          key,
+          importAlgorithm,
+          false,
+          ["verify"],
+        );
 
         return (code) => {
           try {
-            if (!code.includes('$')) {
+            if (!code.includes("$")) {
               return Promise.resolve(null);
             }
-            const payload = atob(code.slice(0, code.indexOf('$')));
-            const sig = new Uint8Array(Array.from(atob(code.slice(code.indexOf('$') + 1))).map((d) => d.charCodeAt(0)));
+            const payload = atob(code.slice(0, code.indexOf("$")));
+            const sig = new Uint8Array(
+              Array.from(atob(code.slice(code.indexOf("$") + 1))).map((d) =>
+                d.charCodeAt(0),
+              ),
+            );
 
             const encoded = new TextEncoder().encode(payload);
 
             return Promise.resolve(
               keyPromise
-                .then((key) => self.crypto.subtle.verify(verifyAlgorithm, key, sig, encoded))
-                .then((verified) => (verified ? payload : null))
+                .then((key) =>
+                  self.crypto.subtle.verify(verifyAlgorithm, key, sig, encoded),
+                )
+                .then((verified) => (verified ? payload : null)),
             ).catch((_error) => {
               return null;
             });
@@ -141,13 +159,13 @@
         return decodeAndVerifySignature(
           key,
           {
-            name: 'ECDSA',
-            namedCurve: 'P-384',
+            name: "ECDSA",
+            namedCurve: "P-384",
           },
           {
-            name: 'ECDSA',
-            hash: { name: 'SHA-384' },
-          }
+            name: "ECDSA",
+            hash: { name: "SHA-384" },
+          },
         );
       }
 
@@ -155,7 +173,13 @@
         if (!self.crypto || !self.crypto.subtle) {
           return (text) => Promise.resolve(text);
         }
-        const keyPromise = self.crypto.subtle.importKey('jwk', key, importAlgorithm, false, ['sign']);
+        const keyPromise = self.crypto.subtle.importKey(
+          "jwk",
+          key,
+          importAlgorithm,
+          false,
+          ["sign"],
+        );
 
         return (payload) => {
           try {
@@ -163,8 +187,13 @@
 
             return Promise.resolve(
               keyPromise
-                .then((key) => self.crypto.subtle.sign(signAlgorithm, key, encoded))
-                .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode(...new Uint8Array(sig)))}`)
+                .then((key) =>
+                  self.crypto.subtle.sign(signAlgorithm, key, encoded),
+                )
+                .then(
+                  (sig) =>
+                    `${btoa(payload)}$${btoa(String.fromCharCode(...new Uint8Array(sig)))}`,
+                ),
             ).catch(() => null);
           } catch {
             return Promise.resolve(payload);
@@ -176,46 +205,54 @@
         return signAndEncode(
           key,
           {
-            name: 'ECDSA',
-            namedCurve: 'P-384',
+            name: "ECDSA",
+            namedCurve: "P-384",
           },
           {
-            name: 'ECDSA',
-            hash: { name: 'SHA-384' },
-          }
+            name: "ECDSA",
+            hash: { name: "SHA-384" },
+          },
         );
       }
-      document.getElementById('sign').onsubmit = (e) => {
+      document.getElementById("sign").onsubmit = (e) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
-        const payload = data.get('payload').trim();
-        const key = JSON.parse(data.get('key'));
+        const payload = data.get("payload").trim();
+        const key = JSON.parse(data.get("key"));
 
         signAndEncodeECDA(key)(payload).then((r) => {
-          document.getElementById('o').value = r;
+          document.getElementById("o").value = r;
         });
       };
 
-      document.getElementById('verify').onsubmit = (e) => {
+      document.getElementById("verify").onsubmit = (e) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
-        const code = data.get('code').trim();
-        const key = JSON.parse(data.get('key'));
+        const code = data.get("code").trim();
+        const key = JSON.parse(data.get("key"));
 
         decodeAndVerifyECDSASignature(key)(code).then((r) => {
-          document.getElementById('ov').value = r;
+          document.getElementById("ov").value = r;
         });
       };
 
-      document.getElementById('keys').onsubmit = (e) => {
+      document.getElementById("keys").onsubmit = (e) => {
         e.preventDefault();
 
         generateKeyPair({
-          name: 'ECDSA',
-          namedCurve: 'P-384',
+          name: "ECDSA",
+          namedCurve: "P-384",
         }).then((r) => {
-          document.getElementById('private').value = JSON.stringify(r[0], null, 2);
-          document.getElementById('public').value = JSON.stringify(r[1], null, 2);
+          document.getElementById("private").value = JSON.stringify(
+            r[0],
+            null,
+            2,
+          );
+          document.getElementById("public").value = JSON.stringify(
+            r[1],
+            null,
+            2,
+          );
         });
       };
     </script>

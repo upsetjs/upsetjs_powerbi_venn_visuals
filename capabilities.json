@@ -69,7 +69,10 @@
           }
         },
         "values": {
-          "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "counts" } }]
+          "select": [
+            { "bind": { "to": "sets" } },
+            { "bind": { "to": "counts" } }
+          ]
         }
       }
     }

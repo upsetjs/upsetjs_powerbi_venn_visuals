@@ -4,12 +4,14 @@
  *
  * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
  */
-import type powerbi from 'powerbi-visuals-api';
+import type powerbi from "powerbi-visuals-api";
 
 export class UniqueColorPalette {
   private readonly map = new Map<string, powerbi.IColorInfo>();
   private readonly set = new Set<string>();
-  constructor(public readonly base: powerbi.extensibility.ISandboxExtendedColorPalette) {}
+  constructor(
+    public readonly base: powerbi.extensibility.ISandboxExtendedColorPalette,
+  ) {}
 
   getColor(key: string) {
     if (this.map.has(key)) {

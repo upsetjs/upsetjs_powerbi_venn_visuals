@@ -5,20 +5,24 @@
  * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import type powerbi from 'powerbi-visuals-api';
-import { fillDefaults, ISets, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
-import type { IPowerBISet, IPowerBISets, IPowerBIElem } from './interfaces';
-import type { UniqueColorPalette } from './UniqueColorPalette';
+import type powerbi from "powerbi-visuals-api";
+import {
+  fillDefaults,
+  ISets,
+  GenerateSetCombinationsOptions,
+} from "@upsetjs/bundle";
+import type { IPowerBISet, IPowerBISets, IPowerBIElem } from "./interfaces";
+import type { UniqueColorPalette } from "./UniqueColorPalette";
 
 export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 
 export class UpSetBaseThemeSettings {
-  static readonly SET_COLORS_OBJECT_NAME = 'setColors';
-  static readonly POWERBI_THEME = 'powerbi';
-  static readonly POWERBI_SET_COLORS_THEME = 'powerbi-set';
-  static readonly POWERBI_AUTO_THEME = 'auto';
+  static readonly SET_COLORS_OBJECT_NAME = "setColors";
+  static readonly POWERBI_THEME = "powerbi";
+  static readonly POWERBI_SET_COLORS_THEME = "powerbi-set";
+  static readonly POWERBI_AUTO_THEME = "auto";
 
-  theme = 'light';
+  theme = "light";
   color = defaults.color;
   opacity = defaults.opacity;
   hasSelectionColor = defaults.hasSelectionColor;
@@ -26,9 +30,12 @@ export class UpSetBaseThemeSettings {
   textColor = defaults.textColor;
   selectionColor = defaults.selectionColor;
 
-  generate(colorPalette: UniqueColorPalette, data: powerbi.DataViewCategorical) {
+  generate(
+    colorPalette: UniqueColorPalette,
+    data: powerbi.DataViewCategorical,
+  ) {
     const keys = (<(keyof UpSetBaseThemeSettings)[]>Object.keys(this)).filter(
-      (d) => typeof this[d] === 'string' || typeof this[d] === 'number'
+      (d) => typeof this[d] === "string" || typeof this[d] === "number",
     );
     const r: any = {};
     if (this.supportIndividualColors()) {
@@ -59,7 +66,9 @@ export class UpSetBaseThemeSettings {
     return this.theme !== UpSetBaseThemeSettings.POWERBI_SET_COLORS_THEME;
   }
 
-  enumerateSetColors(sets: ISets<IPowerBIElem>): powerbi.VisualObjectInstanceEnumerationObject {
+  enumerateSetColors(
+    sets: ISets<IPowerBIElem>,
+  ): powerbi.VisualObjectInstanceEnumerationObject {
     if (!this.supportIndividualColors()) {
       return {
         instances: [],
@@ -70,7 +79,12 @@ export class UpSetBaseThemeSettings {
       instances: (<IPowerBISets>(<unknown>sets))
         .slice()
         .reverse()
-        .map((set) => setToObjectInstance(set, UpSetBaseThemeSettings.SET_COLORS_OBJECT_NAME)),
+        .map((set) =>
+          setToObjectInstance(
+            set,
+            UpSetBaseThemeSettings.SET_COLORS_OBJECT_NAME,
+          ),
+        ),
     };
   }
 }
@@ -93,7 +107,7 @@ function setToObjectInstance(set: IPowerBISet, objectName: string) {
 }
 
 export class UpSetFontSizeSettings {
-  fontFamily = 'Segoe UI';
+  fontFamily = "Segoe UI";
   barLabel = 7; // pt
   chartLabel = 12; // pt
   setLabel = 12; // pt
@@ -117,14 +131,17 @@ function generatePowerBITheme(colorPalette: UniqueColorPalette) {
   return {
     color: c,
     textColor: colorPalette.base.foregroundButton.value,
-    selectionColor: '',
+    selectionColor: "",
     opacity: 1,
     hasSelectionOpacity: 0.4,
     filled: true,
   };
 }
 
-function generateAutoPowerBITheme(colorPalette: UniqueColorPalette, data: powerbi.DataViewCategorical) {
+function generateAutoPowerBITheme(
+  colorPalette: UniqueColorPalette,
+  data: powerbi.DataViewCategorical,
+) {
   if (!data.categories || data.categories.length === 0) {
     return {};
   }
@@ -140,14 +157,16 @@ function generateAutoPowerBITheme(colorPalette: UniqueColorPalette, data: powerb
   };
 }
 
-export class UpSetCombinationSettings implements GenerateSetCombinationsOptions {
+export class UpSetCombinationSettings
+  implements GenerateSetCombinationsOptions
+{
   show = true;
-  displayName = 'Intersections';
-  mode: 'intersection' | 'union' | 'distinctIntersection' = 'intersection';
+  displayName = "Intersections";
+  mode: "intersection" | "union" | "distinctIntersection" = "intersection";
   min = 0;
   max = 6;
   empty = false;
-  order = <'cardinality'>'cardinality,name';
+  order = <"cardinality">"cardinality,name";
   limit = 100;
 
   generate(): GenerateSetCombinationsOptions<IPowerBIElem> {
@@ -157,14 +176,14 @@ export class UpSetCombinationSettings implements GenerateSetCombinationsOptions 
       max: this.max,
       empty: this.empty,
       limit: this.limit,
-      order: <'cardinality'>fixOrder(this.order),
+      order: <"cardinality">fixOrder(this.order),
     };
   }
 }
 
 function fixOrder(order: string) {
-  if (order.includes(',')) {
-    return order.split(',');
+  if (order.includes(",")) {
+    return order.split(",");
   }
   return order;
 }

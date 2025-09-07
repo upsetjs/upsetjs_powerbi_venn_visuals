@@ -5,21 +5,31 @@
  * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import { renderVennDiagram, renderVennDiagramSkeleton, VennDiagramProps, createVennJSAdapter } from '@upsetjs/bundle';
-import type powerbi from 'powerbi-visuals-api';
+import {
+  renderVennDiagram,
+  renderVennDiagramSkeleton,
+  VennDiagramProps,
+  createVennJSAdapter,
+} from "@upsetjs/bundle";
+import type powerbi from "powerbi-visuals-api";
 import {
   extractElems,
   resolveSelection,
   resolveElementsFromSelection,
   createColorResolver,
   extractSetsAndCombinations,
-} from './utils/model';
-import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
-import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
-import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
-import { mergeColors } from '@upsetjs/bundle';
-import { layout } from '@upsetjs/venn.js';
-import { UniqueColorPalette } from './utils/UniqueColorPalette';
+} from "./utils/model";
+import {
+  OnHandler,
+  createTooltipHandler,
+  createContextMenuHandler,
+  createSelectionHandler,
+} from "./utils/handler";
+import VisualSettings, { UpSetThemeSettings } from "./VisualSettings";
+import type { IPowerBIElem, IPowerBIElems } from "./utils/interfaces";
+import { mergeColors } from "@upsetjs/bundle";
+import { layout } from "@upsetjs/venn.js";
+import { UniqueColorPalette } from "./utils/UniqueColorPalette";
 
 const adapter = createVennJSAdapter(layout);
 
