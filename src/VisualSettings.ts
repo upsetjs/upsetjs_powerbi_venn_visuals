@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2023 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2025 Samuel Gratzl <sam@sgratzl.com>
  */
 
 import {
