@@ -1,11 +1,7 @@
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { FontsCardSettings, ThemeCardSettings } from "./utils/settings";
 
-const {
-  SimpleCard,
-  ItemDropdown,
-  Model,
-} = formattingSettings;
+const { SimpleCard, ItemDropdown, Model } = formattingSettings;
 
 export class StyleCardSettings extends SimpleCard {
   public mode = new ItemDropdown({
