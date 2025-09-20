@@ -81,26 +81,6 @@
   "supportsMultiVisualSelection": true,
   "privileges": [],
   "objects": {
-    "license": {
-      "displayName": "License",
-      "objectCategory": 1,
-      "properties": {
-        "code": {
-          "displayName": "Code",
-          "description": "license Code",
-          "type": { "text": true }
-        },
-        "info": {
-          "displayName": "Info",
-          "description": "will print whether the license could be verified",
-          "type": { "text": true }
-        },
-        "contact": {
-          "displayName": "Contact",
-          "type": { "text": true }
-        }
-      }
-    },
     "theme": {
       "displayName": "Theme",
       "objectCategory": 1,

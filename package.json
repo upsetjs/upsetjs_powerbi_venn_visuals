@@ -39,7 +39,8 @@
     "@upsetjs/venn.js": "^2.0.0",
     "core-js": "^3.45.1",
     "powerbi-visuals-api": "~5.4.0",
-    "powerbi-visuals-utils-dataviewutils": "^6.1.0"
+    "powerbi-visuals-utils-dataviewutils": "^6.1.0",
+    "powerbi-visuals-utils-formattingmodel": "^6.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

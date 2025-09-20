@@ -8,7 +8,7 @@ If you want to use UpSet.js for a commercial application or in a commercial envi
 
 ### Open-source license
 
-> Copyright (C) 2023 Samuel Gratzl (sam@sgratzl.com)
+> Copyright (C) 2025 Samuel Gratzl (sam@sgratzl.com)
 
 ### GNU AFFERO GENERAL PUBLIC LICENSE
 

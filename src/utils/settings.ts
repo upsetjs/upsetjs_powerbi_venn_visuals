@@ -7,120 +7,205 @@
 
 import type powerbi from "powerbi-visuals-api";
 import {
+  VennDiagramFontSizes,
+  UpSetThemeProps,
+  UpSetThemes,
+} from "@upsetjs/bundle";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import {
   fillDefaults,
   ISets,
   GenerateSetCombinationsOptions,
 } from "@upsetjs/bundle";
-import type { IPowerBISet, IPowerBISets, IPowerBIElem } from "./interfaces";
-import type { UniqueColorPalette } from "./UniqueColorPalette";
+import type { IPowerBISets, IPowerBIElem } from "./interfaces";
+import { UniqueColorPalette } from "./UniqueColorPalette";
+
+const { SimpleCard, ItemDropdown, ColorPicker, FontPicker, NumUpDown } =
+  formattingSettings;
 
 export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 
-export class UpSetBaseThemeSettings {
+export class SetColorCardSettings extends SimpleCard {
+  visible = false;
+  name: string = "setColors";
+  displayName: string = "Set Colors";
+}
+
+export class ThemeCardSettings extends SimpleCard {
   static readonly SET_COLORS_OBJECT_NAME = "setColors";
+
   static readonly POWERBI_THEME = "powerbi";
   static readonly POWERBI_SET_COLORS_THEME = "powerbi-set";
   static readonly POWERBI_AUTO_THEME = "auto";
 
-  theme = "light";
-  color = defaults.color;
-  opacity = defaults.opacity;
-  hasSelectionColor = defaults.hasSelectionColor;
-  hasSelectionOpacity = defaults.hasSelectionOpacity;
-  textColor = defaults.textColor;
-  selectionColor = defaults.selectionColor;
+  public theme = new ItemDropdown({
+    name: "theme",
+    displayName: "Theme",
+    value: { value: "light", displayName: "Light" }, // Default value
+    items: [
+      { value: "light", displayName: "Light" },
+      {
+        value: ThemeCardSettings.POWERBI_THEME,
+        displayName: "Individual Colors",
+      },
+      {
+        value: ThemeCardSettings.POWERBI_SET_COLORS_THEME,
+        displayName: "Colored Sets",
+      },
+      {
+        value: ThemeCardSettings.POWERBI_AUTO_THEME,
+        displayName: "Single Color",
+      },
+      { value: "dark", displayName: "Dark" },
+      { value: "vega", displayName: "Vega" },
+    ],
+  });
+
+  public selectionColor = new ColorPicker({
+    name: "selectionColor",
+    displayName: "Selection Color",
+    value: { value: defaults.selectionColor },
+  });
+  public color = new ColorPicker({
+    name: "color",
+    displayName: "Color",
+    value: { value: defaults.color },
+  });
+  public opacity = new NumUpDown({
+    name: "opacity",
+    displayName: "Opacity",
+    value: defaults.opacity,
+  });
+  public hasSelectionColor = new ColorPicker({
+    name: "hasSelectionColor",
+    displayName: "Color when selection is present",
+    value: { value: defaults.hasSelectionColor },
+  });
+  public hasSelectionOpacity = new NumUpDown({
+    name: "hasSelectionOpacity",
+    displayName: "Opacity when selection is present",
+    value: defaults.hasSelectionOpacity,
+  });
+  public textColor = new ColorPicker({
+    name: "textColor",
+    displayName: "Text Color",
+    value: { value: defaults.textColor },
+  });
+
+  public setColors = new SetColorCardSettings();
+
+  name: string = "theme";
+  displayName: string = "Theme";
+  slices = [
+    this.theme,
+    this.selectionColor,
+    this.color,
+    this.opacity,
+    this.hasSelectionColor,
+    this.hasSelectionOpacity,
+    this.textColor,
+    this.setColors,
+  ];
 
   generate(
     colorPalette: UniqueColorPalette,
     data: powerbi.DataViewCategorical,
   ) {
-    const keys = (<(keyof UpSetBaseThemeSettings)[]>Object.keys(this)).filter(
-      (d) => typeof this[d] === "string" || typeof this[d] === "number",
-    );
-    const r: { theme?: string } = {};
+    const r: Partial<UpSetThemeProps & { theme: UpSetThemes }> = {};
     if (this.supportIndividualColors()) {
       Object.assign(r, generatePowerBITheme(colorPalette));
-    } else if (this.theme === UpSetBaseThemeSettings.POWERBI_AUTO_THEME) {
+    } else if (
+      this.theme.value.value === ThemeCardSettings.POWERBI_AUTO_THEME
+    ) {
       Object.assign(r, generateAutoPowerBITheme(colorPalette, data));
     } else {
-      r.theme = this.theme;
+      r.theme = this.theme.value.value as UpSetThemes;
     }
-    keys.forEach((key) => {
-      const defaultValue = (defaults as unknown)[key];
-      const current = this[key];
+    for (const color of [
+      this.selectionColor,
+      this.color,
+      this.hasSelectionColor,
+      this.textColor,
+    ]) {
+      const current = color.value.value;
+      const defaultValue = defaults[color.name] as string;
       if (current !== defaultValue) {
-        r[key] = current;
+        r[color.name] = current;
       }
-    });
+    }
+    for (const num of [this.hasSelectionOpacity, this.opacity]) {
+      const current = num.value;
+      const defaultValue = defaults[num.name] as number;
+      if (current !== defaultValue) {
+        r[num.name] = current;
+      }
+    }
     return r;
   }
 
   supportIndividualColors() {
     return (
-      this.theme === UpSetBaseThemeSettings.POWERBI_THEME ||
-      this.theme === UpSetBaseThemeSettings.POWERBI_SET_COLORS_THEME
+      this.theme.value.value === ThemeCardSettings.POWERBI_THEME ||
+      this.theme.value.value === ThemeCardSettings.POWERBI_SET_COLORS_THEME
     );
   }
 
   get deriveCombinationColor() {
-    return this.theme !== UpSetBaseThemeSettings.POWERBI_SET_COLORS_THEME;
+    return (
+      this.theme.value.value !== ThemeCardSettings.POWERBI_SET_COLORS_THEME
+    );
   }
 
-  enumerateSetColors(
-    sets: ISets<IPowerBIElem>,
-  ): powerbi.VisualObjectInstanceEnumerationObject {
-    if (!this.supportIndividualColors()) {
-      return {
-        instances: [],
-      };
+  derive(sets: ISets<IPowerBIElem>) {
+    const visible = this.supportIndividualColors();
+    this.setColors.visible = visible;
+    if (!visible) {
+      this.setColors.slices = [];
+    } else {
+      this.setColors.slices = (<IPowerBISets>(<unknown>sets)).map(
+        (set) =>
+          new ColorPicker({
+            name: "setColor",
+            displayName: set.name,
+            value: { value: set.color },
+            selector: {
+              metadata: set.value.source.queryName,
+            },
+          }),
+      );
     }
-    // reverse since after extractSets they are reversed again
-    return {
-      instances: (<IPowerBISets>(<unknown>sets))
-        .slice()
-        .reverse()
-        .map((set) =>
-          setToObjectInstance(
-            set,
-            UpSetBaseThemeSettings.SET_COLORS_OBJECT_NAME,
-          ),
-        ),
-    };
   }
 }
 
-function setToObjectInstance(set: IPowerBISet, objectName: string) {
-  return {
-    objectName,
-    displayName: set.name,
-    selector: {
-      metadata: set.value.source.queryName,
-    },
-    properties: {
-      fill: {
-        solid: {
-          color: set.color,
-        },
-      },
-    },
-  };
-}
+export class FontsCardSettings extends SimpleCard {
+  public fontFamily = new FontPicker({
+    name: "fontFamily",
+    displayName: "Font Family",
+    value: "Segoe UI",
+  });
 
-export class UpSetFontSizeSettings {
-  fontFamily = "Segoe UI";
-  barLabel = 7; // pt
-  chartLabel = 12; // pt
-  setLabel = 12; // pt
-  valueLabel = 10; // pt
+  public setLabel = new NumUpDown({
+    name: "setLabel",
+    displayName: "Set Label",
+    value: 12,
+  });
 
-  generate() {
+  public valueLabel = new NumUpDown({
+    name: "valueLabel",
+    displayName: "Value Label",
+    value: 10,
+  });
+
+  name: string = "fonts";
+  displayName: string = "Fonts";
+  slices = [this.fontFamily, this.setLabel, this.valueLabel];
+
+  generate(): { fontFamily: string | false; fontSizes: VennDiagramFontSizes } {
     return {
-      fontFamily: this.fontFamily,
+      fontFamily: this.fontFamily.value,
       fontSizes: {
-        barLabel: `${this.barLabel}pt`,
-        chartLabel: `${this.chartLabel}pt`,
-        setLabel: `${this.setLabel}pt`,
-        valueLabel: `${this.valueLabel}pt`,
+        setLabel: `${this.setLabel.value}pt`,
+        valueLabel: `${this.valueLabel.value}pt`,
       },
     };
   }
