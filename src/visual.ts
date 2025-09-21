@@ -193,7 +193,7 @@ export class VennDiagram implements powerbi.extensibility.visual.IVisual {
       },
       this.settings.fonts.generate(),
       this.settings.theme.generate(this.colorPalette, dataView.categorical!),
-      this.settings.style,
+      this.settings.style.generate(),
     );
 
     if (!areDummyValues && this.host.hostCapabilities.allowInteractions) {

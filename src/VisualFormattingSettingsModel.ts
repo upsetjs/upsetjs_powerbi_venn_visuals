@@ -21,6 +21,12 @@ export class StyleCardSettings extends SimpleCard {
   name: string = "style";
   displayName: string = "Style";
   slices = [this.mode];
+
+  generate() {
+    return {
+      mode: this.mode.value.value,
+    };
+  }
 }
 
 export default class VisualFormattingSettingsModel extends Model {

@@ -10,6 +10,7 @@ import {
   generateCombinations,
   GenerateSetCombinationsOptions,
   ISetCombinations,
+  mergeColors,
 } from "@upsetjs/bundle";
 import type powerbi from "powerbi-visuals-api";
 import type {
@@ -264,6 +265,12 @@ function extractExpressionInput(
       return <IPowerBISet>s;
     }),
   );
+  // inject combination color
+  for (const combination of combinations) {
+    Object.assign(combination, {
+      color: mergeColors(Array.from(combination.sets).map((d) => d.color)),
+    });
+  }
   return { sets: typedSets, combinations: typedCombinations };
 }
 
