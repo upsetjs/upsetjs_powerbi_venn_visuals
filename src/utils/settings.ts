@@ -175,6 +175,16 @@ export class ThemeCardSettings extends SimpleCard {
       );
     }
   }
+
+  applyColorPalette(
+    colorPalette: powerbi.extensibility.ISandboxExtendedColorPalette,
+  ) {
+    if (colorPalette.isHighContrast) {
+      this.textColor.value = colorPalette.foreground;
+      this.color.value = colorPalette.background;
+      this.selectionColor.value = colorPalette.foregroundSelected;
+    }
+  }
 }
 
 export class FontsCardSettings extends SimpleCard {

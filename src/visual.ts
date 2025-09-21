@@ -31,7 +31,7 @@ import { layout } from "@upsetjs/venn.js";
 import { UniqueColorPalette } from "./utils/UniqueColorPalette";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel/lib";
 import VisualFormattingSettingsModel from "./VisualFormattingSettingsModel";
-import { ThemeCardSettings } from "utils/settings";
+import { ThemeCardSettings } from "./utils/settings";
 
 const adapter = createVennJSAdapter(layout);
 
@@ -62,7 +62,7 @@ export class VennDiagram implements powerbi.extensibility.visual.IVisual {
       this.localizationManager,
     );
     this.settings = new VisualFormattingSettingsModel();
-    this.renderPlaceholder();
+    this.settings.theme.applyColorPalette(options.host.colorPalette);
 
     [this.onHover, this.onMouseMove] = createTooltipHandler(
       this.target,

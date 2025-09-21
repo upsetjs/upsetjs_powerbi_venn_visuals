@@ -21,7 +21,7 @@ export class StyleCardSettings extends SimpleCard {
 
 export default class VisualFormattingSettingsModel extends Model {
   public theme = new ThemeCardSettings();
-  public style: StyleCardSettings = new StyleCardSettings();
+  public style = new StyleCardSettings();
   public fonts = new FontsCardSettings();
 
   cards = [this.theme, this.style, this.fonts];
