@@ -21,7 +21,7 @@
     "start": "pbiviz start",
     "test": "echo no tests",
     "build:preview": "shx mv pbiviz.json pbiviz.bak.json && shx cp pbiviz_preview.json pbiviz.json && pbiviz package && shx mv dist/upSetJSVenn* dist/upsetjs_venn_preview.pbiviz && shx rm pbiviz.json && shx mv pbiviz.bak.json pbiviz.json",
-    "build": "shx rm -rf dist && npm run build:preview && pbiviz package && shx cp dist/upSetJSVenn* dist/upsetjs_venn.pbiviz",
+    "build": "shx rm -rf dist && pbiviz package && shx cp dist/upSetJSVenn* dist/upsetjs_venn.pbiviz && npm run build:preview",
     "lint": "npm run eslint && npm run prettier",
     "fix": "npm run eslint:fix && npm run prettier:write",
     "prettier:impl": "prettier --cache \"*\" \"*/**\"",
