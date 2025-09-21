@@ -12,11 +12,7 @@ import {
   UpSetThemes,
 } from "@upsetjs/bundle";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-import {
-  fillDefaults,
-  ISets,
-  GenerateSetCombinationsOptions,
-} from "@upsetjs/bundle";
+import { fillDefaults, ISets } from "@upsetjs/bundle";
 import type { IPowerBISets, IPowerBIElem } from "./interfaces";
 import { UniqueColorPalette } from "./UniqueColorPalette";
 
@@ -78,60 +74,72 @@ export class ThemeCardSettings extends SimpleCard {
 
   public theme = new ItemDropdown({
     name: "theme",
-    displayName: "Theme",
-    value: { value: "light", displayName: "Light" }, // Default value
+    displayNameKey: "Theme_Theme_DisplayName",
+    value: {
+      displayNameKey: "Theme_Theme_Light_DisplayName",
+      value: "light",
+    },
     items: [
-      { value: "light", displayName: "Light" },
       {
+        displayNameKey: "Theme_Theme_Light_DisplayName",
+        value: "light",
+      },
+      {
+        displayNameKey: "Theme_Theme_IndividualColors_DisplayName",
         value: ThemeCardSettings.POWERBI_THEME,
-        displayName: "Individual Colors",
       },
       {
+        displayNameKey: "Theme_Theme_ColoredSets_DisplayName",
         value: ThemeCardSettings.POWERBI_SET_COLORS_THEME,
-        displayName: "Colored Sets",
       },
       {
+        displayNameKey: "Theme_Theme_SingleColor_DisplayName",
         value: ThemeCardSettings.POWERBI_AUTO_THEME,
-        displayName: "Single Color",
       },
-      { value: "dark", displayName: "Dark" },
-      { value: "vega", displayName: "Vega" },
+      {
+        displayNameKey: "Theme_Theme_Dark_DisplayName",
+        value: "dark",
+      },
+      {
+        displayNameKey: "Theme_Theme_Vega_DisplayName",
+        value: "vega",
+      },
     ],
   });
 
   public selectionColor = new ColorPicker({
     name: "selectionColor",
-    displayName: "Selection Color",
+    displayNameKey: "Theme_SelectionColor_DisplayName",
     value: { value: defaults.selectionColor },
   });
   public color = new ColorPicker({
     name: "color",
-    displayName: "Color",
+    displayNameKey: "Theme_Color_DisplayName",
     value: { value: defaults.color },
   });
   public opacity = new NumUpDown({
     name: "opacity",
-    displayName: "Opacity",
+    displayNameKey: "Theme_Opacity_DisplayName",
     value: defaults.opacity,
   });
   public hasSelectionColor = new ColorPicker({
     name: "hasSelectionColor",
-    displayName: "Color when selection is present",
+    displayNameKey: "Theme_HasSelectionColor_DisplayName",
     value: { value: defaults.hasSelectionColor },
   });
   public hasSelectionOpacity = new NumUpDown({
     name: "hasSelectionOpacity",
-    displayName: "Opacity when selection is present",
+    displayNameKey: "Theme_HasSelectionOpacity_DisplayName",
     value: defaults.hasSelectionOpacity,
   });
   public textColor = new ColorPicker({
     name: "textColor",
-    displayName: "Text Color",
+    displayNameKey: "Theme_TextColor_DisplayName",
     value: { value: defaults.textColor },
   });
 
   name: string = "theme";
-  displayName: string = "Theme";
+  displayNameKey: string = "Theme_DisplayName";
   slices = [
     this.theme,
     this.selectionColor,
@@ -205,24 +213,24 @@ export class ThemeCardSettings extends SimpleCard {
 export class FontsCardSettings extends SimpleCard {
   public fontFamily = new FontPicker({
     name: "fontFamily",
-    displayName: "Font Family",
+    displayNameKey: "Fonts_FontFamily_DisplayName",
     value: "Segoe UI",
   });
 
   public setLabel = new NumUpDown({
     name: "setLabel",
-    displayName: "Set Label",
+    displayNameKey: "Fonts_SetLabel_DisplayName",
     value: 12,
   });
 
   public valueLabel = new NumUpDown({
     name: "valueLabel",
-    displayName: "Value Label",
+    displayNameKey: "Fonts_ValueLabel_DisplayName",
     value: 10,
   });
 
   name: string = "fonts";
-  displayName: string = "Fonts";
+  displayNameKey: string = "Fonts_DisplayName";
   slices = [this.fontFamily, this.setLabel, this.valueLabel];
 
   generate(): { fontFamily: string | false; fontSizes: VennDiagramFontSizes } {
@@ -265,35 +273,4 @@ function generateAutoPowerBITheme(
     hasSelectionOpacity: 0.4,
     filled: true,
   };
-}
-
-export class UpSetCombinationSettings
-  implements GenerateSetCombinationsOptions
-{
-  show = true;
-  displayName = "Intersections";
-  mode: "intersection" | "union" | "distinctIntersection" = "intersection";
-  min = 0;
-  max = 6;
-  empty = false;
-  order = <"cardinality">"cardinality,name";
-  limit = 100;
-
-  generate(): GenerateSetCombinationsOptions<IPowerBIElem> {
-    return {
-      type: this.mode,
-      min: this.min,
-      max: this.max,
-      empty: this.empty,
-      limit: this.limit,
-      order: <"cardinality">fixOrder(this.order),
-    };
-  }
-}
-
-function fixOrder(order: string) {
-  if (order.includes(",")) {
-    return order.split(",");
-  }
-  return order;
 }

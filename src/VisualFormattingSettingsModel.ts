@@ -10,16 +10,25 @@ const { SimpleCard, ItemDropdown, Model } = formattingSettings;
 export class StyleCardSettings extends SimpleCard {
   public mode = new ItemDropdown({
     name: "mode",
-    displayName: "Layout Mode",
-    value: { value: "venn", displayName: "Venn Diagram" },
+    displayNameKey: "Style_Mode_DisplayName",
+    value: {
+      displayNameKey: "Style_Mode_Venn_DisplayName",
+      value: "venn",
+    },
     items: [
-      { value: "venn", displayName: "Venn Diagram" },
-      { value: "euler", displayName: "Euler Diagram" },
+      {
+        displayNameKey: "Style_Mode_Venn_DisplayName",
+        value: "venn",
+      },
+      {
+        displayNameKey: "Style_Mode_Euler_DisplayName",
+        value: "euler",
+      },
     ],
   });
 
   name: string = "style";
-  displayName: string = "Style";
+  displayNameKey: string = "Style_DisplayName";
   slices = [this.mode];
 
   generate() {

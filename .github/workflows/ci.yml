@@ -23,33 +23,33 @@ jobs:
       #     cp samples/got.pbix public/integrations/powerbi/got_venn.pbix
       #     cp samples/sample.pbix public/integrations/powerbi/sample_venn.pbix
 
-        # - name: Deploy Main
-        #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        #   uses: upsetjs/actions-gh-pages@sgratzl
-        #   env:
-        #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        #   with:
-        #     external_repository: upsetjs/upsetjs.github.io
-        #     publish_branch: main
-        #     publish_dir: ./public
-        #     enable_jekyll: true
-        #     keep_files: true
+      # - name: Deploy Main
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   uses: upsetjs/actions-gh-pages@sgratzl
+      #   env:
+      #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      #   with:
+      #     external_repository: upsetjs/upsetjs.github.io
+      #     publish_branch: main
+      #     publish_dir: ./public
+      #     enable_jekyll: true
+      #     keep_files: true
 
-        # - if: github.ref == 'refs/heads/dev'
-        #   # move to next directory
-        #   run: |
-        #     mv public public2
-        #     mkdir -p public
-        #     mv public2 public/next
+      # - if: github.ref == 'refs/heads/dev'
+      #   # move to next directory
+      #   run: |
+      #     mv public public2
+      #     mkdir -p public
+      #     mv public2 public/next
 
-        # - name: Deploy Develop
-        #   if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-        #   uses: upsetjs/actions-gh-pages@sgratzl
-        #   env:
-        #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        #   with:
-        #     external_repository: upsetjs/upsetjs.github.io
-        #     publish_branch: main
-        #     publish_dir: ./public
-        #     enable_jekyll: true
-        #     keep_files: true
+      # - name: Deploy Develop
+      #   if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+      #   uses: upsetjs/actions-gh-pages@sgratzl
+      #   env:
+      #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      #   with:
+      #     external_repository: upsetjs/upsetjs.github.io
+      #     publish_branch: main
+      #     publish_dir: ./public
+      #     enable_jekyll: true
+      #     keep_files: true
