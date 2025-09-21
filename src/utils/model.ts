@@ -151,19 +151,16 @@ export function extractElems(
 
 export function createColorResolver(
   colorPalette: UniqueColorPalette,
-  setColorObjectName?: string,
+  colors?: string[],
 ) {
-  return (value: powerbi.DataViewValueColumn) => {
-    if (!setColorObjectName) {
+  return (value: powerbi.DataViewValueColumn, i: number) => {
+    if (!colors) {
       return undefined;
     }
     // reserve color in any case
-    const base = colorPalette.getColor(value.source.queryName!).value;
-    if (value.source.objects && value.source.objects[setColorObjectName]) {
-      return (<powerbi.Fill>value.source.objects[setColorObjectName].fill)
-        .solid!.color;
-    }
-    return base;
+    const setName = value.source.queryName!;
+    const base = colorPalette.getColor(setName).value;
+    return colors[i] ?? base;
   };
 }
 
@@ -173,7 +170,10 @@ function isPartOfSet(v: powerbi.PrimitiveValue) {
 
 function extractBaseSets(
   data: powerbi.DataViewCategorical,
-  colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined,
+  colorResolver: (
+    value: powerbi.DataViewValueColumn,
+    i: number,
+  ) => string | undefined,
 ) {
   // just the sets
   const sets = data.values
@@ -185,7 +185,7 @@ function extractBaseSets(
       index: i,
       values: value.values,
       name: value.source.displayName,
-      color: colorResolver(value),
+      color: colorResolver(value, i),
     };
   });
 }
@@ -270,7 +270,10 @@ function extractExpressionInput(
 export function extractSetsAndCombinations(
   elems: IPowerBIElems,
   data: powerbi.DataViewCategorical,
-  colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined,
+  colorResolver: (
+    value: powerbi.DataViewValueColumn,
+    i: number,
+  ) => string | undefined,
   genOptions: GenerateSetCombinationsOptions<IPowerBIElem>,
 ): {
   sets: IPowerBISets;

@@ -31,7 +31,6 @@ import { layout } from "@upsetjs/venn.js";
 import { UniqueColorPalette } from "./utils/UniqueColorPalette";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel/lib";
 import VisualFormattingSettingsModel from "./VisualFormattingSettingsModel";
-import { ThemeCardSettings } from "./utils/settings";
 
 const adapter = createVennJSAdapter(layout);
 
@@ -91,6 +90,11 @@ export class VennDiagram implements powerbi.extensibility.visual.IVisual {
   }
 
   public getFormattingModel(): powerbi.visuals.FormattingModel {
+    this.settings.setColors.derive(
+      this.props.sets,
+      this.settings.theme.supportIndividualColors(),
+      this.colorPalette,
+    );
     return this.formattingSettingsService.buildFormattingModel(this.settings);
   }
 
@@ -212,7 +216,7 @@ export class VennDiagram implements powerbi.extensibility.visual.IVisual {
     const colorResolver = createColorResolver(
       this.colorPalette,
       this.settings.theme.supportIndividualColors()
-        ? ThemeCardSettings.SET_COLORS_OBJECT_NAME
+        ? this.settings.setColors.toColors()
         : undefined,
     );
 

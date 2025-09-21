@@ -174,8 +174,98 @@
       "displayName": "Set Colors",
       "objectCategory": 1,
       "properties": {
-        "fill": {
-          "displayName": "Color",
+        "setColor1": {
+          "displayName": "Set Color 1",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor2": {
+          "displayName": "Set Color 2",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor3": {
+          "displayName": "Set Color 3",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor4": {
+          "displayName": "Set Color 4",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor5": {
+          "displayName": "Set Color 5",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor6": {
+          "displayName": "Set Color 6",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor7": {
+          "displayName": "Set Color 7",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor8": {
+          "displayName": "Set Color 8",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor9": {
+          "displayName": "Set Color 9",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor10": {
+          "displayName": "Set Color 10",
           "type": {
             "fill": {
               "solid": {

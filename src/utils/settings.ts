@@ -29,11 +29,49 @@ export class SetColorCardSettings extends SimpleCard {
   visible = false;
   name: string = "setColors";
   displayName: string = "Set Colors";
+
+  slices: formattingSettings.ColorPicker[] = [
+    ...Array.from({ length: 10 }),
+  ].map(
+    (_, i) =>
+      new ColorPicker({
+        name: `setColor${i + 1}`,
+        displayName: `Set Color`,
+        value: { value: undefined },
+      }),
+  );
+
+  derive(
+    sets: ISets<IPowerBIElem>,
+    visible: boolean,
+    colorPalette: UniqueColorPalette,
+  ) {
+    this.visible = visible;
+    if (!visible) {
+      this.slices.forEach((d) => (d.visible = false));
+    } else {
+      const s = [...(<IPowerBISets>(<unknown>sets))].reverse();
+      s.forEach((set, i) => {
+        this.slices[i].visible = true;
+        this.slices[i].displayName = set.name;
+        if (this.slices[i].value.value == null) {
+          this.slices[i].value = colorPalette.getColor(
+            set.value.source.queryName,
+          );
+        }
+      });
+      for (let i = s.length; i < this.slices.length; i++) {
+        this.slices[i].visible = false;
+      }
+    }
+  }
+
+  toColors() {
+    return this.slices.map((d) => d.value.value);
+  }
 }
 
 export class ThemeCardSettings extends SimpleCard {
-  static readonly SET_COLORS_OBJECT_NAME = "setColors";
-
   static readonly POWERBI_THEME = "powerbi";
   static readonly POWERBI_SET_COLORS_THEME = "powerbi-set";
   static readonly POWERBI_AUTO_THEME = "auto";
@@ -92,8 +130,6 @@ export class ThemeCardSettings extends SimpleCard {
     value: { value: defaults.textColor },
   });
 
-  public setColors = new SetColorCardSettings();
-
   name: string = "theme";
   displayName: string = "Theme";
   slices = [
@@ -104,7 +140,6 @@ export class ThemeCardSettings extends SimpleCard {
     this.hasSelectionColor,
     this.hasSelectionOpacity,
     this.textColor,
-    this.setColors,
   ];
 
   generate(
@@ -154,26 +189,6 @@ export class ThemeCardSettings extends SimpleCard {
     return (
       this.theme.value.value !== ThemeCardSettings.POWERBI_SET_COLORS_THEME
     );
-  }
-
-  derive(sets: ISets<IPowerBIElem>) {
-    const visible = this.supportIndividualColors();
-    this.setColors.visible = visible;
-    if (!visible) {
-      this.setColors.slices = [];
-    } else {
-      this.setColors.slices = (<IPowerBISets>(<unknown>sets)).map(
-        (set) =>
-          new ColorPicker({
-            name: "setColor",
-            displayName: set.name,
-            value: { value: set.color },
-            selector: {
-              metadata: set.value.source.queryName,
-            },
-          }),
-      );
-    }
   }
 
   applyColorPalette(
