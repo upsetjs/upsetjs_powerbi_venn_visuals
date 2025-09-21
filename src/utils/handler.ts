@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2025 Samuel Gratzl <sam@sgratzl.com>
  */
 import {
   ISetLike,
@@ -11,11 +11,13 @@ import {
   IBoxPlot,
   UpSetAddonHandlerInfos,
   isSetCombination,
-} from '@upsetjs/bundle';
-import type powerbi from 'powerbi-visuals-api';
-import type { IPowerBIElem } from './interfaces';
+} from "@upsetjs/bundle";
+import type powerbi from "powerbi-visuals-api";
+import type { IPowerBIElem } from "./interfaces";
 
-export function createContextMenuHandler(selectionManager: powerbi.extensibility.ISelectionManager) {
+export function createContextMenuHandler(
+  selectionManager: powerbi.extensibility.ISelectionManager,
+) {
   return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
     evt.preventDefault();
     if (!selection) {
@@ -39,7 +41,7 @@ function areEqual<T>(a: readonly T[], b: readonly T[]) {
 
 export function createSelectionHandler(
   selectionManager: powerbi.extensibility.ISelectionManager,
-  selectImpl: (v: ISetLike<IPowerBIElem> | null) => void
+  selectImpl: (v: ISetLike<IPowerBIElem> | null) => void,
 ): OnHandler {
   return (selection: ISetLike<IPowerBIElem> | null) => {
     if (!selection) {
@@ -62,29 +64,48 @@ export function createSelectionHandler(
   };
 }
 
-function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility.VisualTooltipDataItem[] {
+function renderAddon(
+  addon: UpSetAddonHandlerInfo | null,
+  localizationManager: powerbi.extensibility.ILocalizationManager,
+): powerbi.extensibility.VisualTooltipDataItem[] {
   if (!addon) {
     return [];
   }
-  if (addon.id === 'categorical') {
+  if (addon.id === "categorical") {
     // should be fixed in 1.4.1
     const bins = <ICategoryBins>Object.keys(addon.value)
-      .filter((v) => v !== 'toString')
-      .map((k) => (<any>addon.value)[k]);
-    return [{ displayName: 'Attribute', value: addon.name }].concat(
+      .filter((v) => v !== "toString")
+      .map((k) => (addon.value as unknown)[k]);
+    return [
+      {
+        displayName: localizationManager.getDisplayName("Addon_Attribute"),
+        value: addon.name,
+      },
+    ].concat(
       bins.map((bin) => ({
         displayName: bin.label,
         color: bin.color,
         value: `${bin.count.toLocaleString()} (${Math.round(100 * bin.percentage)}%)`,
-      }))
+      })),
     );
   }
-  if (addon.id === 'boxplot') {
+  if (addon.id === "boxplot") {
     const b = <IBoxPlot>addon.value;
-    const labels = ['Minimum', '25% Quantile', 'Median', '75% Quantile', 'Maximum'];
+    const labels = [
+      localizationManager.getDisplayName("Addon_Minimum"),
+      localizationManager.getDisplayName("Addon_25q"),
+      localizationManager.getDisplayName("Addon_Median"),
+      localizationManager.getDisplayName("Addon_75q"),
+      localizationManager.getDisplayName("Addon_Maximum"),
+    ];
     const values = [b.min, b.q1, b.median, b.q3, b.max];
-    return [{ displayName: 'Attribute', value: addon.name }].concat(
-      labels.map((l, i) => ({ displayName: l, value: values[i].toFixed(2) }))
+    return [
+      {
+        displayName: localizationManager.getDisplayName("Addon_Attribute"),
+        value: addon.name,
+      },
+    ].concat(
+      labels.map((l, i) => ({ displayName: l, value: values[i].toFixed(2) })),
     );
   }
   return [];
@@ -95,20 +116,28 @@ const TOOLTIP_DELAY = 250;
 export declare type OnHandler = (
   selection: ISetLike<IPowerBIElem> | null,
   evt: MouseEvent,
-  addons: UpSetAddonHandlerInfos
+  addons: UpSetAddonHandlerInfos,
 ) => void;
 
 export function createTooltipHandler(
   target: HTMLElement,
-  host: powerbi.extensibility.visual.IVisualHost
+  host: powerbi.extensibility.visual.IVisualHost,
+  localizationManager: powerbi.extensibility.ILocalizationManager,
 ): [OnHandler | undefined, OnHandler | undefined] {
   if (!host.tooltipService.enabled()) {
     return [undefined, undefined];
   }
 
-  const createArgs = (selection: ISetLike<IPowerBIElem>, evt: MouseEvent, addons: UpSetAddonHandlerInfos) => {
+  const createArgs = (
+    selection: ISetLike<IPowerBIElem>,
+    evt: MouseEvent,
+    addons: UpSetAddonHandlerInfos,
+  ) => {
     const bb = target.getBoundingClientRect();
-    const coordinates = [evt.clientX - bb.left - target.clientLeft, evt.clientY - bb.top - target.clientTop];
+    const coordinates = [
+      evt.clientX - bb.left - target.clientLeft,
+      evt.clientY - bb.top - target.clientTop,
+    ];
 
     const sel = selection.elems.map((e) => e.s!);
     return <powerbi.extensibility.TooltipShowOptions>{
@@ -117,13 +146,18 @@ export function createTooltipHandler(
       dataItems: [
         {
           header: selection.name,
-          displayName: 'Size',
+          displayName: localizationManager.getDisplayName("Tooltip_Size"),
           value: selection.cardinality.toLocaleString(),
         },
         ...(isSetCombination(selection) && selection.degree > 1
-          ? Array.from(selection.sets).map((s) => ({ displayName: s.name, value: s.cardinality.toLocaleString() }))
+          ? Array.from(selection.sets).map((s) => ({
+              displayName: s.name,
+              value: s.cardinality.toLocaleString(),
+            }))
           : []),
-        ...(<powerbi.extensibility.VisualTooltipDataItem[]>[]).concat(...addons.map(renderAddon)),
+        ...(<powerbi.extensibility.VisualTooltipDataItem[]>[]).concat(
+          ...addons.map((a) => renderAddon(a, localizationManager)),
+        ),
       ],
       identities: [sel],
     };

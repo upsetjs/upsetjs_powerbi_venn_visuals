@@ -1,0 +1,15 @@
+{
+  "Addon_Attribute": "Attribute",
+  "Addon_Minimum": "Minimum",
+  "Addon_25q": "25% Quantile",
+  "Addon_Median": "Median",
+  "Addon_75q": "75% Quantile",
+  "Addon_Maximum": "Maximum",
+  "Tooltip_Size": "Size",
+  "Role_Elements": "Elements",
+  "Role_Elements_Desc": "exactly one grouping representing the list of elements that are synced",
+  "Role_Sets": "Sets",
+  "Role_Sets_Desc": "one or more grouping or measures where each is interpreted as a set, a trueish value in row i is interpreted that the corresponding element i is part of this set",
+  "Role_Counts": "Cardinality Expression Measure",
+  "Role_Counts_Desc": "numerical measure defining the number of elements in the set, see also expression input"
+}

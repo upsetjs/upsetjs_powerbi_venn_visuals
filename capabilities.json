@@ -3,7 +3,9 @@
     {
       "name": "elements",
       "displayName": "Elements",
+      "displayNameKey": "Role_Elements",
       "description": "exactly one grouping representing the list of elements that are synced",
+      "descriptionKey": "Role_Elements_Desc",
       "kind": "Grouping",
       "preferredTypes": [
         {
@@ -17,7 +19,9 @@
     {
       "name": "sets",
       "displayName": "Sets",
+      "displayNameKey": "Role_Sets",
       "description": "one or more grouping or measures where each is interpreted as a set, a trueish value in row i is interpreted that the corresponding element i is part of this set",
+      "descriptionKey": "Role_Sets_Desc",
       "kind": "GroupingOrMeasure",
       "preferredTypes": [
         {
@@ -31,7 +35,9 @@
     {
       "name": "counts",
       "displayName": "Cardinality Expression Measure",
+      "displayNameKey": "Role_Counts",
       "description": "numerical measure defining the number of elements in the set, see also expression input",
+      "descriptionKey": "Role_Counts_Desc",
       "kind": "Measure",
       "preferredTypes": [
         {
@@ -58,38 +64,23 @@
           "for": { "in": "elements" },
           "dataReductionAlgorithm": {
             "window": {
-              "count": 10000
+              "count": 30000
             }
           }
         },
         "values": {
-          "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "counts" } }]
+          "select": [
+            { "bind": { "to": "sets" } },
+            { "bind": { "to": "counts" } }
+          ]
         }
       }
     }
   ],
   "suppressDefaultTitle": true,
+  "supportsMultiVisualSelection": true,
+  "privileges": [],
   "objects": {
-    "license": {
-      "displayName": "License",
-      "objectCategory": 1,
-      "properties": {
-        "code": {
-          "displayName": "Code",
-          "description": "license Code",
-          "type": { "text": true }
-        },
-        "info": {
-          "displayName": "Info",
-          "description": "will print whether the license could be verified",
-          "type": { "text": true }
-        },
-        "contact": {
-          "displayName": "Contact",
-          "type": { "text": true }
-        }
-      }
-    },
     "theme": {
       "displayName": "Theme",
       "objectCategory": 1,
@@ -183,8 +174,98 @@
       "displayName": "Set Colors",
       "objectCategory": 1,
       "properties": {
-        "fill": {
-          "displayName": "Color",
+        "setColor1": {
+          "displayName": "Set Color 1",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor2": {
+          "displayName": "Set Color 2",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor3": {
+          "displayName": "Set Color 3",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor4": {
+          "displayName": "Set Color 4",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor5": {
+          "displayName": "Set Color 5",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor6": {
+          "displayName": "Set Color 6",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor7": {
+          "displayName": "Set Color 7",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor8": {
+          "displayName": "Set Color 8",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor9": {
+          "displayName": "Set Color 9",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "setColor10": {
+          "displayName": "Set Color 10",
           "type": {
             "fill": {
               "solid": {
@@ -248,6 +329,8 @@
   "supportsHighlight": true,
   "supportsLandingPage": true,
   "supportsEmptyDataView": true,
+  "supportsSynchronizingFilterState": true,
+  "supportsKeyboardFocus": true,
   "tooltips": {
     "supportEnhancedTooltips": true,
     "supportedTypes": {

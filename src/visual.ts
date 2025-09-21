@@ -2,32 +2,44 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2025 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import { renderVennDiagram, renderVennDiagramSkeleton, VennDiagramProps, createVennJSAdapter } from '@upsetjs/bundle';
-import type powerbi from 'powerbi-visuals-api';
+import {
+  renderVennDiagram,
+  renderVennDiagramSkeleton,
+  VennDiagramProps,
+  createVennJSAdapter,
+} from "@upsetjs/bundle";
+import type powerbi from "powerbi-visuals-api";
 import {
   extractElems,
   resolveSelection,
   resolveElementsFromSelection,
   createColorResolver,
   extractSetsAndCombinations,
-} from './utils/model';
-import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
-import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
-import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
-import { mergeColors } from '@upsetjs/bundle';
-import { layout } from '@upsetjs/venn.js';
-import { UniqueColorPalette } from './utils/UniqueColorPalette';
+} from "./utils/model";
+import {
+  OnHandler,
+  createTooltipHandler,
+  createContextMenuHandler,
+  createSelectionHandler,
+} from "./utils/handler";
+import type { IPowerBIElems } from "./utils/interfaces";
+import { mergeColors } from "@upsetjs/bundle";
+import { layout } from "@upsetjs/venn.js";
+import { UniqueColorPalette } from "./utils/UniqueColorPalette";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel/lib";
+import VisualFormattingSettingsModel from "./VisualFormattingSettingsModel";
 
 const adapter = createVennJSAdapter(layout);
 
-export class Visual implements powerbi.extensibility.visual.IVisual {
+export class VennDiagram implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
-  private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
   private readonly selectionManager: powerbi.extensibility.ISelectionManager;
   private readonly host: powerbi.extensibility.visual.IVisualHost;
+  private readonly localizationManager: powerbi.extensibility.ILocalizationManager;
+  private readonly formattingSettingsService: FormattingSettingsService;
 
   private readonly onContextMenu: OnHandler;
   private readonly setSelection: OnHandler;
@@ -35,26 +47,36 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly onMouseMove: undefined | OnHandler;
   private readonly colorPalette: UniqueColorPalette;
 
-  private props: VennDiagramProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
+  private settings: VisualFormattingSettingsModel;
+  private props: VennDiagramProps = { sets: [], width: 100, height: 100 };
   private rows: IPowerBIElems = [];
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
+    this.localizationManager = options.host.createLocalizationManager();
     this.selectionManager = options.host.createSelectionManager();
     this.colorPalette = new UniqueColorPalette(options.host.colorPalette);
     this.host = options.host;
-    this.renderPlaceholder();
+    this.formattingSettingsService = new FormattingSettingsService(
+      this.localizationManager,
+    );
+    this.settings = new VisualFormattingSettingsModel();
+    this.settings.theme.applyColorPalette(options.host.colorPalette);
 
-    [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host);
+    [this.onHover, this.onMouseMove] = createTooltipHandler(
+      this.target,
+      this.host,
+      this.localizationManager,
+    );
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
-    this.target.addEventListener('contextmenu', (e) => {
+    this.target.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       this.selectionManager.showContextMenu(
         {},
         {
           x: e.clientX,
           y: e.clientY,
-        }
+        },
       );
     });
     this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
@@ -67,8 +89,20 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     });
   }
 
+  public getFormattingModel(): powerbi.visuals.FormattingModel {
+    this.settings.setColors.derive(
+      this.props.sets,
+      this.settings.theme.supportIndividualColors(),
+      this.colorPalette,
+    );
+    return this.formattingSettingsService.buildFormattingModel(this.settings);
+  }
+
   private render() {
-    if (this.settings.style.mode !== 'venn' || this.props.sets.length > 5) {
+    if (
+      this.settings.style.mode.value.value !== "venn" ||
+      this.props.sets.length > 5
+    ) {
       this.props.layout = adapter;
     } else {
       delete this.props.layout;
@@ -90,24 +124,27 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private renderPlaceholder() {
-    this.target.textContent = '';
-    this.target.style.position = 'relative';
+    this.target.textContent = "";
+    this.target.style.position = "relative";
     renderVennDiagramSkeleton(this.target, {
-      width: '100%',
-      height: '100%',
+      width: "100%",
+      height: "100%",
     });
   }
 
-  private renderImpl(options: powerbi.extensibility.visual.VisualUpdateOptions) {
-    // reset watermark
-    this.settings.license.resetWatermark(this.target);
-
+  private renderImpl(
+    options: powerbi.extensibility.visual.VisualUpdateOptions,
+  ) {
     if (!options.dataViews || options.dataViews.length === 0) {
       this.colorPalette.clear();
       return false;
     }
     const dataView = options.dataViews[0];
-    this.settings = VisualSettings.parse(dataView);
+    this.settings =
+      this.formattingSettingsService.populateFormattingSettingsModel(
+        VisualFormattingSettingsModel,
+        dataView,
+      );
     if (!dataView.categorical || !dataView.categorical.categories) {
       this.colorPalette.clear();
       return false;
@@ -131,8 +168,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
     const { sets, combinations } = this.generateSetsAndCombinations(dataView);
 
-    this.verifyLicense(sets.length);
-
     if (sets.length === 0 || combinations.length === 0) {
       this.colorPalette.clear();
       return false;
@@ -144,7 +179,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       combinations,
       dataView.categorical!,
       this.selectionManager,
-      !areDummyValues && this.host.hostCapabilities.allowInteractions === true
+      !areDummyValues && this.host.hostCapabilities.allowInteractions === true,
     );
 
     this.props = Object.assign(
@@ -158,7 +193,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       },
       this.settings.fonts.generate(),
       this.settings.theme.generate(this.colorPalette, dataView.categorical!),
-      this.settings.style
+      this.settings.style.generate(),
     );
 
     if (!areDummyValues && this.host.hostCapabilities.allowInteractions) {
@@ -174,52 +209,27 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private generateSetsAndCombinations(dataView: powerbi.DataView) {
-    const { rows, settings } = this;
-
-    if (rows.length === 0) {
+    if (this.rows.length === 0) {
       return { sets: [], combinations: [] };
     }
 
     const colorResolver = createColorResolver(
       this.colorPalette,
-      settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+      this.settings.theme.supportIndividualColors()
+        ? this.settings.setColors.toColors()
+        : undefined,
     );
 
-    return extractSetsAndCombinations(rows, dataView.categorical!, colorResolver, {
-      type: 'distinctIntersection',
-      min: 1,
-      empty: true,
-      mergeColors,
-    });
+    return extractSetsAndCombinations(
+      this.rows,
+      dataView.categorical!,
+      colorResolver,
+      {
+        type: "distinctIntersection",
+        min: 1,
+        empty: true,
+        mergeColors,
+      },
+    );
   }
-
-  private verifyLicense(numSets: number) {
-    this.settings.license.updateLicenseState(this.target, this.host, () => usesProFeatures(numSets, this.settings));
-  }
-
-  /**
-   * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the
-   * objects and properties you want to expose to the users in the property pane.
-   *
-   */
-  enumerateObjectInstances(
-    options: powerbi.EnumerateVisualObjectInstancesOptions
-  ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
-    if (options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME) {
-      return this.settings.theme.enumerateSetColors(this.props.sets);
-    }
-    return VisualSettings.enumerateObjectInstances(this.settings, options);
-  }
-}
-
-function usesProFeatures(numSets: number, settings: VisualSettings) {
-  const theme = settings.theme;
-  if (theme.theme !== 'light') {
-    return true;
-  }
-  if (numSets > 3 || settings.style.mode !== 'venn') {
-    return true;
-  }
-
-  return false;
 }

@@ -7,5 +7,5 @@ node_modules
 /build
 /webpack.statistics*
 /keys
-/src/secrets.ts
 *.bak.json
+.eslintcache

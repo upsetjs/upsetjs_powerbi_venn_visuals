@@ -27,5 +27,5 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true
   },
-  "files": ["./src/visual.ts"]
+  "files": ["src/visual.ts"]
 }
