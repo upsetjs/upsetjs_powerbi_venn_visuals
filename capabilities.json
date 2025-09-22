@@ -3,179 +3,112 @@
     {
       "name": "elements",
       "displayName": "Elements",
+      "displayNameKey": "Role_Elements",
       "description": "exactly one grouping representing the list of elements that are synced",
+      "descriptionKey": "Role_Elements_Desc",
       "kind": "Grouping",
-      "preferredTypes": [
-        {
-          "text": true
-        },
-        {
-          "integer": true
-        }
-      ]
+      "preferredTypes": [{ "text": true }, { "integer": true }]
     },
     {
       "name": "sets",
       "displayName": "Sets",
+      "displayNameKey": "Role_Sets",
       "description": "one or more grouping or measures where each is interpreted as a set, a trueish value in row i is interpreted that the corresponding element i is part of this set",
+      "descriptionKey": "Role_Sets_Desc",
       "kind": "GroupingOrMeasure",
-      "preferredTypes": [
-        {
-          "bool": true
-        },
-        {
-          "integer": true
-        }
-      ]
+      "preferredTypes": [{ "bool": true }, { "integer": true }]
     },
     {
       "name": "counts",
       "displayName": "Cardinality Expression Measure",
+      "displayNameKey": "Role_Counts",
       "description": "numerical measure defining the number of elements in the set, see also expression input",
+      "descriptionKey": "Role_Counts_Desc",
       "kind": "Measure",
-      "preferredTypes": [
-        {
-          "numeric": true
-        },
-        {
-          "integer": true
-        }
-      ]
+      "preferredTypes": [{ "numeric": true }, { "integer": true }]
     }
   ],
   "dataViewMappings": [
     {
-      "conditions": [
-        {
-          "elements": { "max": 1 }
-        },
-        {
-          "counts": { "max": 1 }
-        }
-      ],
+      "conditions": [{ "elements": { "max": 1 } }, { "counts": { "max": 1 } }],
       "categorical": {
         "categories": {
           "for": { "in": "elements" },
           "dataReductionAlgorithm": {
-            "window": {
-              "count": 10000
-            }
+            "window": { "count": 30000 }
           }
         },
         "values": {
-          "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "counts" } }]
+          "select": [
+            { "bind": { "to": "sets" } },
+            { "bind": { "to": "counts" } }
+          ]
         }
       }
     }
   ],
   "suppressDefaultTitle": true,
+  "supportsMultiVisualSelection": true,
+  "privileges": [],
   "objects": {
-    "license": {
-      "displayName": "License",
-      "objectCategory": 1,
-      "properties": {
-        "code": {
-          "displayName": "Code",
-          "description": "license Code",
-          "type": { "text": true }
-        },
-        "info": {
-          "displayName": "Info",
-          "description": "will print whether the license could be verified",
-          "type": { "text": true }
-        },
-        "contact": {
-          "displayName": "Contact",
-          "type": { "text": true }
-        }
-      }
-    },
     "theme": {
-      "displayName": "Theme",
+      "displayNameKey": "Theme_DisplayName",
       "objectCategory": 1,
       "properties": {
         "theme": {
-          "displayName": "Theme",
+          "displayNameKey": "Theme_Theme_DisplayName",
           "type": {
             "enumeration": [
               {
-                "displayName": "Light",
+                "displayNameKey": "Theme_Theme_Light_DisplayName",
                 "value": "light"
               },
               {
-                "displayName": "Individual Colors",
+                "displayNameKey": "Theme_Theme_IndividualColors_DisplayName",
                 "value": "powerbi"
               },
               {
-                "displayName": "Colored Sets",
+                "displayNameKey": "Theme_Theme_ColoredSets_DisplayName",
                 "value": "powerbi-set"
               },
               {
-                "displayName": "Single Color",
+                "displayNameKey": "Theme_Theme_SingleColor_DisplayName",
                 "value": "auto"
               },
               {
-                "displayName": "Dark",
+                "displayNameKey": "Theme_Theme_Dark_DisplayName",
                 "value": "dark"
               },
               {
-                "displayName": "Vega",
+                "displayNameKey": "Theme_Theme_Vega_DisplayName",
                 "value": "vega"
               }
             ]
           }
         },
         "selectionColor": {
-          "displayName": "Selection Color",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
+          "displayNameKey": "Theme_SelectionColor_DisplayName",
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "color": {
-          "displayName": "Color",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
+          "displayNameKey": "Theme_Color_DisplayName",
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "opacity": {
-          "displayName": "Opacity",
-          "type": {
-            "numeric": true
-          }
+          "displayNameKey": "Theme_Opacity_DisplayName",
+          "type": { "numeric": true }
         },
         "hasSelectionColor": {
-          "displayName": "Color when selection is present",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
+          "displayNameKey": "Theme_HasSelectionColor_DisplayName",
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "hasSelectionOpacity": {
-          "displayName": "Opacity when selection is present",
-          "type": {
-            "numeric": true
-          }
+          "displayNameKey": "Theme_HasSelectionOpacity_DisplayName",
+          "type": { "numeric": true }
         },
         "textColor": {
-          "displayName": "Text Color",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
+          "displayNameKey": "Theme_TextColor_DisplayName",
+          "type": { "fill": { "solid": { "color": true } } }
         }
       }
     },
@@ -183,31 +116,61 @@
       "displayName": "Set Colors",
       "objectCategory": 1,
       "properties": {
-        "fill": {
-          "displayName": "Color",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
+        "setColor1": {
+          "displayName": "Set Color 1",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor2": {
+          "displayName": "Set Color 2",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor3": {
+          "displayName": "Set Color 3",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor4": {
+          "displayName": "Set Color 4",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor5": {
+          "displayName": "Set Color 5",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor6": {
+          "displayName": "Set Color 6",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor7": {
+          "displayName": "Set Color 7",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor8": {
+          "displayName": "Set Color 8",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor9": {
+          "displayName": "Set Color 9",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "setColor10": {
+          "displayName": "Set Color 10",
+          "type": { "fill": { "solid": { "color": true } } }
         }
       }
     },
     "style": {
-      "displayName": "Style",
+      "displayNameKey": "Style_DisplayName",
       "properties": {
         "mode": {
-          "displayName": "Layout Mode",
+          "displayNameKey": "Style_Mode_DisplayName",
           "type": {
             "enumeration": [
               {
-                "displayName": "Venn Diagram",
+                "displayNameKey": "Style_Mode_Venn_DisplayName",
                 "value": "venn"
               },
               {
-                "displayName": "Euler Diagram",
+                "displayNameKey": "Style_Mode_Euler_DisplayName",
                 "value": "euler"
               }
             ]
@@ -216,31 +179,19 @@
       }
     },
     "fonts": {
-      "displayName": "Fonts",
+      "displayNameKey": "Fonts_DisplayName",
       "properties": {
         "fontFamily": {
-          "displayName": "Font Family",
-          "type": {
-            "formatting": {
-              "fontFamily": true
-            }
-          }
+          "displayNameKey": "Fonts_FontFamily_DisplayName",
+          "type": { "formatting": { "fontFamily": true } }
         },
         "setLabel": {
-          "displayName": "Set Label",
-          "type": {
-            "formatting": {
-              "fontSize": true
-            }
-          }
+          "displayNameKey": "Fonts_SetLabel_DisplayName",
+          "type": { "formatting": { "fontSize": true } }
         },
         "valueLabel": {
-          "displayName": "Value Label",
-          "type": {
-            "formatting": {
-              "fontSize": true
-            }
-          }
+          "displayNameKey": "Fonts_ValueLabel_DisplayName",
+          "type": { "formatting": { "fontSize": true } }
         }
       }
     }
@@ -248,12 +199,11 @@
   "supportsHighlight": true,
   "supportsLandingPage": true,
   "supportsEmptyDataView": true,
+  "supportsSynchronizingFilterState": true,
+  "supportsKeyboardFocus": true,
   "tooltips": {
     "supportEnhancedTooltips": true,
-    "supportedTypes": {
-      "default": true,
-      "canvas": true
-    },
+    "supportedTypes": { "default": true, "canvas": true },
     "roles": ["tooltips"]
   }
 }

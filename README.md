@@ -33,7 +33,6 @@ see also https://docs.microsoft.com/en-us/power-bi/developer/visuals/environment
 
 ```sh
 npm i
-cp src/secrets.example.json src/secrets.json
 npm run pbiviz -- --install-cert
 ```
 
@@ -56,7 +55,7 @@ npm run release
 1. Create a new release
 1. Update the sample dataset with the latest version
 1. Send a mail to pbivizsubmit@microsoft.com.
-   subject: Ultimate Venn Diagram vX.X.X
+   subject: Venn Diagram vX.X.X
    content: ?
    attachments: the pbiviz and the sample report
 1. Wait for app package XML response
