@@ -5,7 +5,7 @@ const path = require("path");
 function bumpImpl(version, fileName) {
   const desc = path.resolve(fileName);
   const content = require(desc);
-  content.visual.version = version;
+  content.visual.version = version + ".0";
   fs.writeFileSync(desc, JSON.stringify(content, null, 2) + "\n");
 }
 
