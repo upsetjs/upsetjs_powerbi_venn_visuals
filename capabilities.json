@@ -52,42 +52,34 @@
   "privileges": [],
   "objects": {
     "theme": {
-      "displayName": "Theme",
       "displayNameKey": "Theme_DisplayName",
       "objectCategory": 1,
       "properties": {
         "theme": {
-          "displayName": "Theme",
           "displayNameKey": "Theme_Theme_DisplayName",
           "type": {
             "enumeration": [
               {
-                "displayName": "Light",
                 "displayNameKey": "Theme_Theme_Light_DisplayName",
                 "value": "light"
               },
               {
-                "displayName": "Individual Colors",
                 "displayNameKey": "Theme_Theme_IndividualColors_DisplayName",
                 "value": "powerbi"
               },
               {
-                "displayName": "Colored Sets",
                 "displayNameKey": "Theme_Theme_ColoredSets_DisplayName",
                 "value": "powerbi-set"
               },
               {
-                "displayName": "Single Color",
                 "displayNameKey": "Theme_Theme_SingleColor_DisplayName",
                 "value": "auto"
               },
               {
-                "displayName": "Dark",
                 "displayNameKey": "Theme_Theme_Dark_DisplayName",
                 "value": "dark"
               },
               {
-                "displayName": "Vega",
                 "displayNameKey": "Theme_Theme_Vega_DisplayName",
                 "value": "vega"
               }
@@ -95,32 +87,26 @@
           }
         },
         "selectionColor": {
-          "displayName": "Selection Color",
           "displayNameKey": "Theme_SelectionColor_DisplayName",
           "type": { "fill": { "solid": { "color": true } } }
         },
         "color": {
-          "displayName": "Color",
           "displayNameKey": "Theme_Color_DisplayName",
           "type": { "fill": { "solid": { "color": true } } }
         },
         "opacity": {
-          "displayName": "Opacity",
           "displayNameKey": "Theme_Opacity_DisplayName",
           "type": { "numeric": true }
         },
         "hasSelectionColor": {
-          "displayName": "Color when selection is present",
           "displayNameKey": "Theme_HasSelectionColor_DisplayName",
           "type": { "fill": { "solid": { "color": true } } }
         },
         "hasSelectionOpacity": {
-          "displayName": "Opacity when selection is present",
           "displayNameKey": "Theme_HasSelectionOpacity_DisplayName",
           "type": { "numeric": true }
         },
         "textColor": {
-          "displayName": "Text Color",
           "displayNameKey": "Theme_TextColor_DisplayName",
           "type": { "fill": { "solid": { "color": true } } }
         }
@@ -173,21 +159,17 @@
       }
     },
     "style": {
-      "displayName": "Style",
       "displayNameKey": "Style_DisplayName",
       "properties": {
         "mode": {
-          "displayName": "Layout Mode",
           "displayNameKey": "Style_Mode_DisplayName",
           "type": {
             "enumeration": [
               {
-                "displayName": "Venn Diagram",
                 "displayNameKey": "Style_Mode_Venn_DisplayName",
                 "value": "venn"
               },
               {
-                "displayName": "Euler Diagram",
                 "displayNameKey": "Style_Mode_Euler_DisplayName",
                 "value": "euler"
               }
@@ -197,21 +179,17 @@
       }
     },
     "fonts": {
-      "displayName": "Fonts",
       "displayNameKey": "Fonts_DisplayName",
       "properties": {
         "fontFamily": {
-          "displayName": "Font Family",
           "displayNameKey": "Fonts_FontFamily_DisplayName",
           "type": { "formatting": { "fontFamily": true } }
         },
         "setLabel": {
-          "displayName": "Set Label",
           "displayNameKey": "Fonts_SetLabel_DisplayName",
           "type": { "formatting": { "fontSize": true } }
         },
         "valueLabel": {
-          "displayName": "Value Label",
           "displayNameKey": "Fonts_ValueLabel_DisplayName",
           "type": { "formatting": { "fontSize": true } }
         }

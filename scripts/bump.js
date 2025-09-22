@@ -12,7 +12,6 @@ function bumpImpl(version, fileName) {
 class MyVersionPlugin extends Plugin {
   bump(version) {
     bumpImpl(version, "./pbiviz.json");
-    bumpImpl(version, "./pbiviz_preview.json");
   }
 }
 
