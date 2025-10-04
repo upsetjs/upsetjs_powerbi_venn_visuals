@@ -118,7 +118,10 @@ export function extractElems(
   host: powerbi.extensibility.visual.IVisualHost,
 ): IPowerBIElems {
   const attrs = data.values?.filter((d) => d.source?.roles?.attributes) ?? [];
-  const countColumn = data.values?.find((d) => d.source?.roles?.counts);
+  const countColumn = data.values?.find(
+    (d) =>
+      d.source?.roles?.counts && d.values.every((d) => typeof d === "number"),
+  );
 
   if (!data.categories || data.categories.length === 0) {
     if (!data.values) {
@@ -288,7 +291,10 @@ export function extractSetsAndCombinations(
 } {
   const baseSets = extractBaseSets(data, colorResolver);
   const hasCountColumn =
-    data.values?.find((d) => d.source?.roles?.counts) != null;
+    data.values?.find(
+      (d) =>
+        d.source?.roles?.counts && d.values.every((d) => typeof d === "number"),
+    ) != null;
 
   if (!hasCountColumn) {
     const sets = extractSets(elems, baseSets);
